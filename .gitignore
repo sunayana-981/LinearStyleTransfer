@@ -1,0 +1,12 @@
+# Ignore all images in the datasets directory
+datasets/*.jpg
+datasets/*.png
+datasets/*.jpeg
+datasets/*.bmp
+datasets/*.gif
+datasets/*.tiff
+
+# Ignore the entire datasets directory
+datasets/
+
+

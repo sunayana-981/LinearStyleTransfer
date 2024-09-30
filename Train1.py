@@ -3,6 +3,7 @@ import torch
 import argparse
 import torch.nn as nn
 import torch.optim as optim
+from torchvision import transforms
 from libs.Loader import Dataset
 from libs.Matrix import MulLayer
 import torchvision.utils as vutils
@@ -11,156 +12,141 @@ from libs.utils import print_options
 from libs.Criterion import LossCriterion
 from libs.models import encoder3, encoder4, decoder3, decoder4
 from libs.models import encoder5 as loss_network
-from torchvision import transforms
+from transformers import ViTModel
 
 def main():
-    # Argument parsing and configuration
     parser = argparse.ArgumentParser()
-    parser.add_argument("--vgg_dir", default='models/vgg_r41.pth')
-    parser.add_argument("--loss_network_dir", default='models/vgg_r51.pth')
-    parser.add_argument("--decoder_dir", default='models/dec_r41.pth')
-    parser.add_argument("--stylePath", default="datasets/wikiArt/train/")
-    parser.add_argument("--contentPath", default="datasets/coco2014/images/train2014/")
-    parser.add_argument("--outf", default="trainingOutput/")
-    parser.add_argument("--content_layers", default="r41")
-    parser.add_argument("--style_layers", default="r11,r21,r31,r41")
-    parser.add_argument("--batchSize", type=int, default=8)
-    parser.add_argument("--niter", type=int, default=100000)
-    parser.add_argument('--loadSize', type=int, default=300)
-    parser.add_argument('--fineSize', type=int, default=256)
-    parser.add_argument("--lr", type=float, default=1e-4)
-    parser.add_argument("--content_weight", type=float, default=1.0)
-    parser.add_argument("--style_weight", type=float, default=0.02)
-    parser.add_argument("--log_interval", type=int, default=500)
-    parser.add_argument("--gpu_id", type=int, default=0)
-    parser.add_argument("--save_interval", type=int, default=5000)
-    parser.add_argument("--layer", default="r41")
-
+    parser.add_argument('--content_dir', type=str, required=True, help='content image directory')
+    parser.add_argument('--style_dir', type=str, required=True, help='style image directory')
+    parser.add_argument('--vgg_dir', type=str, required=True, help='directory to pretrained VGG model')
+    parser.add_argument('--decoder_dir', type=str, required=True, help='directory to pretrained decoder model')
+    parser.add_argument('--loss_network_dir', type=str, required=True, help='directory to pretrained loss network')
+    parser.add_argument('--cuda', type=int, required=True, help='set it to 1 for running on GPU, 0 for CPU')
+    parser.add_argument('--batch_size', type=int, default=8, help='batch size')
+    parser.add_argument('--max_iter', type=int, default=160000, help='total train iteration')
+    parser.add_argument('--lr', type=float, default=1e-4, help='learning rate')
+    parser.add_argument('--log_dir', type=str, default='logs', help='directory to save logs')
+    parser.add_argument('--model_dir', type=str, default='models', help='directory to save models')
+    parser.add_argument('--matrixPath', type=str, default=None, help='path to pretrained linear transformation matrices')
     opt = parser.parse_args()
-    opt.content_layers = opt.content_layers.split(',')
-    opt.style_layers = opt.style_layers.split(',')
-    opt.cuda = torch.cuda.is_available()
-    device = torch.device("cuda" if opt.cuda else "cpu")
-    if opt.cuda:
-        torch.cuda.set_device(opt.gpu_id)
-
-    os.makedirs(opt.outf, exist_ok=True)
-    cudnn.benchmark = True
+    
     print_options(opt)
 
-    # Define the VGG transformation
-    vgg_transform = transforms.Compose([
-        transforms.Resize(opt.fineSize),
-        transforms.CenterCrop(opt.fineSize),
+    if not os.path.exists(opt.log_dir):
+        os.makedirs(opt.log_dir)
+    if not os.path.exists(opt.model_dir):
+        os.makedirs(opt.model_dir)
+
+    cudnn.benchmark = True
+    device = torch.device("cuda" if opt.cuda and torch.cuda.is_available() else "cpu")
+
+    # Define the transform for DINO input
+    dino_transform = transforms.Compose([
+        transforms.Resize((224, 224)),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406],  # ImageNet means
-                             std=[0.229, 0.224, 0.225])   # ImageNet stds
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
     ])
 
-    ################# DATA #################
-    content_dataset = Dataset(opt.contentPath, opt.loadSize, opt.fineSize, transform=vgg_transform)
-    content_loader_ = torch.utils.data.DataLoader(
-        dataset=content_dataset, batch_size=opt.batchSize, shuffle=True, num_workers=1, drop_last=True)
-    content_loader = iter(content_loader_)
+    # Define transform for VGG input
+    vgg_transform = transforms.Compose([
+        transforms.Resize((256, 256)),  # Adjust size as needed
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+    ])
 
-    style_dataset = Dataset(opt.stylePath, opt.loadSize, opt.fineSize, transform=vgg_transform)
-    style_loader_ = torch.utils.data.DataLoader(
-        dataset=style_dataset, batch_size=opt.batchSize, shuffle=True, num_workers=1, drop_last=True)
-    style_loader = iter(style_loader_)
-
-    ################# MODEL #################
+    # Load models
+    vgg = encoder3()
+    dec = decoder3()
     vgg5 = loss_network()
-    if opt.layer == 'r31':
-        matrix = MulLayer('r31')
-        vgg = encoder3()
-        dec = decoder3()
-    elif opt.layer == 'r41':
-        matrix = MulLayer('r41')
-        vgg = encoder4()
-        dec = decoder4()
 
-    # Load pre-trained models
-    vgg.load_state_dict(torch.load(opt.vgg_dir, map_location=device))
-    dec.load_state_dict(torch.load(opt.decoder_dir, map_location=device))
-    vgg5.load_state_dict(torch.load(opt.loss_network_dir, map_location=device))
+    vgg.load_state_dict(torch.load(opt.vgg_dir, map_location=device, weights_only=True))
+    dec.load_state_dict(torch.load(opt.decoder_dir, map_location=device, weights_only=True))
+    vgg5.load_state_dict(torch.load(opt.loss_network_dir, map_location=device, weights_only=True))
 
-    for param in vgg.parameters():
-        param.requires_grad = False
-    for param in vgg5.parameters():
-        param.requires_grad = False
-    for param in dec.parameters():
-        param.requires_grad = False
+    vgg.to(device).eval()
+    dec.to(device)
+    vgg5.to(device).eval()
 
-    criterion = LossCriterion(opt.style_layers, opt.content_layers, opt.style_weight, opt.content_weight)
-    optimizer = optim.Adam(matrix.parameters(), opt.lr)
+    # Load DINO model
+    dino_model = ViTModel.from_pretrained("facebook/dino-vits16").to(device)
+    dino_model.eval()
 
-    if opt.cuda:
-        vgg.to(device)
-        dec.to(device)
-        vgg5.to(device)
-        matrix.to(device)
+    # Define the linear transformation layer
+    matrix = MulLayer(512)  # Adjust size if needed
+    if opt.matrixPath:
+        matrix.load_state_dict(torch.load(opt.matrixPath))
+    matrix.to(device)
 
-    ################# TRAINING #################
-    def adjust_learning_rate(optimizer, iteration):
-        for param_group in optimizer.param_groups:
-            param_group['lr'] = opt.lr / (1 + iteration * 1e-5)
+    # Define optimizer
+    optimizer = optim.Adam(matrix.parameters(), lr=opt.lr)
 
-    for iteration in range(1, opt.niter + 1):
+    # Define loss criterion
+    criterion = LossCriterion(opt.batch_size, device)
+
+    # Load datasets
+    content_dataset = Dataset(opt.content_dir, opt.batch_size, vgg_transform)
+    style_dataset = Dataset(opt.style_dir, opt.batch_size, dino_transform)
+    content_loader = iter(content_dataset)
+    style_loader = iter(style_dataset)
+
+    for iteration in range(opt.max_iter):
         optimizer.zero_grad()
-        try:
-            content, _ = next(content_loader)
-        except (IOError, StopIteration):
-            content_loader = iter(content_loader_)
-            content, _ = next(content_loader)
 
         try:
-            style, _ = next(style_loader)
-        except (IOError, StopIteration):
-            style_loader = iter(style_loader_)
-            style, _ = next(style_loader)
+            content_images = next(content_loader)
+        except StopIteration:
+            content_loader = iter(content_dataset)
+            content_images = next(content_loader)
 
-        content = content.to(device)
-        style = style.to(device)
+        try:
+            style_images = next(style_loader)
+        except StopIteration:
+            style_loader = iter(style_dataset)
+            style_images = next(style_loader)
 
-        # Get content and style features from VGG
-        cF = vgg(content)
-        sF = vgg(style)
+        content_images = content_images.to(device)
+        style_images = style_images.to(device)
 
-        # Combine content and style features using the matrix module
-        feature, transmatrix = matrix(cF[opt.layer], sF[opt.layer])
+        # Extract features
+        with torch.no_grad():
+            content_features = vgg(content_images)
+            style_features = dino_model(style_images).last_hidden_state
 
-        # Alternatively, if you don't need transmatrix:
-        # feature = matrix(cF[opt.layer], sF[opt.layer])[0]
+        # You may need to reshape or adapt style_features to match content_features
+        style_features = style_features.view(style_features.size(0), -1, content_features.size(2), content_features.size(3))
 
-        # Decode the combined features to get the stylized image
-        transfer = dec(feature)
+        # Apply linear transformation
+        transformed_features = matrix(content_features, style_features)
 
-        # Compute losses
-        sF_loss = vgg5(style)
-        cF_loss = vgg5(content)
-        tF = vgg5(transfer)
-        loss, styleLoss, contentLoss = criterion(tF, sF_loss, cF_loss)
+        # Generate output image
+        output_images = dec(transformed_features)
 
-        # Backward & optimization
+        # Compute loss
+        loss_c, loss_s, loss_identity = criterion(vgg, vgg5, content_images, style_images, output_images)
+        
+        # You might want to add an additional loss term using DINO features for style
+        with torch.no_grad():
+            dino_output = dino_model(output_images).last_hidden_state
+        
+        # Define and compute an additional style loss using DINO features
+        dino_style_loss = nn.MSELoss()(dino_output, style_features)
+        
+        # Combine losses
+        loss = loss_c + loss_s + loss_identity + dino_style_loss
+
         loss.backward()
         optimizer.step()
 
-        print(f'Iteration: [{iteration}/{opt.niter}] Loss: {loss.item():.4f} '
-            f'contentLoss: {contentLoss.item():.4f} styleLoss: {styleLoss.item():.4f} '
-            f'Learning Rate: {optimizer.param_groups[0]["lr"]:.6f}')
+        if (iteration + 1) % 100 == 0:
+            print(f"Iteration: {iteration+1}, Loss: {loss.item()}")
 
-        adjust_learning_rate(optimizer, iteration)
-
-        if iteration % opt.log_interval == 0:
-            transfer = transfer.clamp(0, 1)
-            concat = torch.cat((content.cpu(), style.cpu(), transfer.cpu()), dim=0)
-            vutils.save_image(concat, f'{opt.outf}/{iteration}.png', normalize=True, scale_each=True, nrow=opt.batchSize)
-
-        if iteration > 0 and iteration % opt.save_interval == 0:
-            torch.save(matrix.state_dict(), f'{opt.outf}/{opt.layer}_{iteration}.pth')
-
+        if (iteration + 1) % 5000 == 0:
+            # Save model
+            torch.save(matrix.state_dict(), os.path.join(opt.model_dir, f'matrix_iter_{iteration+1}.pth'))
+            # Save sample images
+            vutils.save_image(output_images, 
+                              os.path.join(opt.log_dir, f'output_iter_{iteration+1}.jpg'),
+                              normalize=True)
 
 if __name__ == '__main__':
-    import multiprocessing
-    multiprocessing.freeze_support()
     main()

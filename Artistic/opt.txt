@@ -6,6 +6,7 @@
                  fineSize: 256                           
                     layer: r41                           
                  loadSize: 256                           
+               matrixOutf: Matrices/                     
                matrixPath: models/r41.pth                
                      outf: Artistic/                     
                 stylePath: data/style/                   

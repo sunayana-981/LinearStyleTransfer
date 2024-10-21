@@ -8,5 +8,6 @@ datasets/*.tiff
 
 # Ignore the entire datasets directory
 datasets/
+plots/
 
 

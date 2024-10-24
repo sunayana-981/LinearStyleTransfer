@@ -9,5 +9,8 @@ datasets/*.tiff
 # Ignore the entire datasets directory
 datasets/
 plots/
+output/
+noise_visualization/
+Matrices/
 
 

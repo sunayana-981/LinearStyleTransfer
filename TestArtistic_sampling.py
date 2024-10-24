@@ -1,100 +1,140 @@
-import os
-import torch
-import argparse
-from libs.Loader import Dataset
-from libs.Matrix import MulLayer
-from libs.models import encoder4
-from PIL import Image, UnidentifiedImageError
-from torchvision import transforms
-
-def parse_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--vgg_dir", default='models/vgg_r41.pth', help='pre-trained encoder path')
-    parser.add_argument("--matrixPath", default='models/r41.pth', help='pre-trained model path')
-    parser.add_argument("--stylePath", default="data/style/", help='path to style images')
-    parser.add_argument("--contentPath", default="data/content/", help='path to content images or single image')
-    parser.add_argument("--matrixOutf", default="Matrices/", help='path to save transformation matrices')
-    parser.add_argument("--loadSize", type=int, default=256, help='scale image size')
-    parser.add_argument("--layer", default="r41", help='which features to transfer')
-    return parser.parse_args()
-
-def setup_model(opt):
-    vgg = encoder4()
-    matrix = MulLayer(opt.layer)
-    vgg.load_state_dict(torch.load(opt.vgg_dir, map_location='cpu'))
-    matrix.load_state_dict(torch.load(opt.matrixPath, map_location='cpu'))
-    
-    if torch.cuda.is_available():
-        vgg.cuda()
-        matrix.cuda()
-    
-    return vgg, matrix
-
-def load_image(path, size):
-    if os.path.isfile(path):
-        try:
-            # If path is a file, load it directly
-            img = Image.open(path).convert('RGB')
-            transform = transforms.Compose([
-                transforms.Resize(size),
-                transforms.CenterCrop(size),
-                transforms.ToTensor(),
-                transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-            ])
-            return transform(img).unsqueeze(0)
-        except UnidentifiedImageError:
-            print(f"Skipping file {path}: not a valid image.")
-            return None
-    else:
-        # If path is a directory, use the Dataset class
-        dataset = Dataset(path, size, size)
-        loader = torch.utils.data.DataLoader(dataset=dataset, batch_size=1, shuffle=False)
-        return next(iter(loader))[0]
-
-def main():
-    opt = parse_args()
-    os.makedirs(opt.matrixOutf, exist_ok=True)
-
-    vgg, matrix = setup_model(opt)
-
-    if os.path.isfile(opt.contentPath):
-        content_files = [os.path.basename(opt.contentPath)]
-    else:
-        content_files = [f for f in os.listdir(opt.contentPath) if f.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp', '.tiff'))]
-
-    style_files = [f for f in os.listdir(opt.stylePath) if f.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp', '.tiff'))]
-
-    for style_file in style_files:
-        style_path = os.path.join(opt.stylePath, style_file)
-        style = load_image(style_path, opt.loadSize)
-
-        if style is None:
-            continue
-
-        if torch.cuda.is_available():
-            style = style.cuda()
-
-        for content_file in content_files:
-            content_path = opt.contentPath if os.path.isfile(opt.contentPath) else os.path.join(opt.contentPath, content_file)
-            content = load_image(content_path, opt.loadSize)
-
-            if content is None:
-                continue
-
-            if torch.cuda.is_available():
-                content = content.cuda()
-
-            with torch.no_grad():
-                cF = vgg(content)   
-                sF = vgg(style)
-                
-                _, transmatrix = matrix(cF[opt.layer], sF[opt.layer])
-
-            matrix_filename = f'matrix_{os.path.splitext(style_file)[0]}_{os.path.splitext(content_file)[0]}.pth'
-            style_out_dir = os.path.join(opt.matrixOutf, os.path.splitext(style_file)[0])
-            os.makedirs(style_out_dir, exist_ok=True)
-            torch.save(transmatrix, os.path.join(style_out_dir, matrix_filename))
-            print(f'Saved matrix for style {style_file} and content {content_file}: {matrix_filename}')
-
 if __name__ == "__main__":
-    main()
+
+    import os
+    import torch
+    import argparse
+    from libs.Loader import Dataset
+    from libs.Matrix import MulLayer
+    import torchvision.utils as vutils
+    import torch.backends.cudnn as cudnn
+    from libs.utils import print_options
+    from libs.models import encoder3, encoder4, encoder5
+    from libs.models import decoder3, decoder4, decoder5
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--vgg_dir", default='models/vgg_r41.pth',
+                        help='pre-trained encoder path')
+    parser.add_argument("--decoder_dir", default='models/dec_r41.pth',
+                        help='pre-trained decoder path')
+    parser.add_argument("--matrixPath", default='models/r41.pth',
+                        help='pre-trained model path')
+    parser.add_argument("--stylePath", default="data/style/",
+                        help='path to style image')
+    parser.add_argument("--contentPath", default="data/content/",
+                        help='path to frames')
+    parser.add_argument("--outf", default="output/",
+                        help='path to transferred images')
+    parser.add_argument("--matrixOutf", default="Matrices/",
+                        help='path to save transformation matrices')
+    parser.add_argument("--batchSize", type=int, default=1,
+                        help='batch size')
+    parser.add_argument('--loadSize', type=int, default=256,
+                        help='scale image size')
+    parser.add_argument('--fineSize', type=int, default=256,
+                        help='crop image size')
+    parser.add_argument("--layer", default="r41",
+                        help='which features to transfer, either r31 or r41')
+
+    ################# PREPARATIONS #################
+    opt = parser.parse_args()
+    opt.cuda = torch.cuda.is_available()
+    print_options(opt)
+
+    os.makedirs(opt.outf, exist_ok=True)
+    os.makedirs(opt.matrixOutf, exist_ok=True)
+    cudnn.benchmark = True
+
+    # Get a list of all content and style files, ignoring non-image files
+    content_files = sorted([f for f in os.listdir(opt.contentPath) if f.endswith(('.png', '.jpg', '.jpeg'))])
+    style_files = sorted([f for f in os.listdir(opt.stylePath) if f.endswith(('.png', '.jpg', '.jpeg'))])
+
+    ################# DATA #################
+    content_dataset = Dataset(opt.contentPath, opt.loadSize, opt.fineSize)
+    content_loader = torch.utils.data.DataLoader(dataset=content_dataset,
+                                                 batch_size=opt.batchSize,
+                                                 shuffle=False,
+                                                 num_workers=0)
+
+    style_dataset = Dataset(opt.stylePath, opt.loadSize, opt.fineSize)
+    style_loader = torch.utils.data.DataLoader(dataset=style_dataset,
+                                               batch_size=opt.batchSize,
+                                               shuffle=False,
+                                               num_workers=0)
+
+    ################# MODEL #################
+    if(opt.layer == 'r31'):
+        vgg = encoder3()
+        dec = decoder3()
+    elif(opt.layer == 'r41'):
+        vgg = encoder4()
+        dec = decoder4()
+    matrix = MulLayer(opt.layer)
+    vgg.load_state_dict(torch.load(opt.vgg_dir))
+    dec.load_state_dict(torch.load(opt.decoder_dir))
+    matrix.load_state_dict(torch.load(opt.matrixPath))
+
+    ################# GLOBAL VARIABLE #################
+    contentV = torch.Tensor(opt.batchSize, 3, opt.fineSize, opt.fineSize)
+    styleV = torch.Tensor(opt.batchSize, 3, opt.fineSize, opt.fineSize)
+
+    ################# GPU #################
+    if(opt.cuda):
+        vgg.cuda()
+        dec.cuda()
+        matrix.cuda()
+        contentV = contentV.cuda()
+        styleV = styleV.cuda()
+
+    # Add a counter variable outside the loop
+    image_counter = 0
+
+    # Ensure correct iteration over both content and style files
+    for styleIdx, styleName in enumerate(style_files):
+        style_image_path = os.path.join(opt.stylePath, styleName)
+        style_image = style_dataset[styleIdx][0].unsqueeze(0)  # Load style image
+        styleV.copy_(style_image)
+
+        # Create a directory for each style image
+        style_base = os.path.splitext(styleName)[0]
+        style_output_dir = os.path.join(opt.outf, style_base)
+        style_matrix_dir = os.path.join(opt.matrixOutf, style_base)
+
+        # Ensure the directories exist for each style
+        os.makedirs(style_output_dir, exist_ok=True)
+        os.makedirs(style_matrix_dir, exist_ok=True)
+
+        for contentIdx, contentName in enumerate(content_files):
+            content_image_path = os.path.join(opt.contentPath, contentName)
+            content_image = content_dataset[contentIdx][0].unsqueeze(0)  # Load content image
+            contentV.copy_(content_image)
+
+            # forward
+            with torch.no_grad():
+                sF = vgg(styleV)
+                cF = vgg(contentV)
+
+                if(opt.layer == 'r41'):
+                    feature, transmatrix = matrix(cF[opt.layer], sF[opt.layer])
+                else:
+                    feature, transmatrix = matrix(cF, sF)
+                transfer = dec(feature)
+
+            transfer = transfer.clamp(0, 1)
+
+            # Increment the counter for each image
+            image_counter += 1
+
+            # Create base names based on content and style image names (excluding file extensions)
+            content_base = os.path.splitext(contentName)[0]
+
+            # Save paths (using style directories and content + style names in the filename)
+            output_img_path = f"{style_output_dir}/{content_base}_{style_base}_{image_counter}.png"
+            matrix_save_path = f"{style_matrix_dir}/{content_base}_{style_base}_{image_counter}_matrix.pth"
+
+            # Save the image and matrix
+            vutils.save_image(transfer, output_img_path, normalize=True, scale_each=True, nrow=opt.batchSize)
+            torch.save(transmatrix, matrix_save_path)
+
+            # Output success message
+            print(f'Transferred image saved at {output_img_path}')
+            print(f'Transformation matrix saved at {matrix_save_path}')

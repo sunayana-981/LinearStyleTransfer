@@ -85,10 +85,7 @@ if __name__ == "__main__":
         contentV = contentV.cuda()
         styleV = styleV.cuda()
 
-    # Add a counter variable outside the loop
-    image_counter = 0
-
-    # Ensure correct iteration over both content and style files
+    # Iterate over styles
     for styleIdx, styleName in enumerate(style_files):
         style_image_path = os.path.join(opt.stylePath, styleName)
         style_image = style_dataset[styleIdx][0].unsqueeze(0)  # Load style image
@@ -102,6 +99,9 @@ if __name__ == "__main__":
         # Ensure the directories exist for each style
         os.makedirs(style_output_dir, exist_ok=True)
         os.makedirs(style_matrix_dir, exist_ok=True)
+
+        # Reset the counter for each style
+        image_counter = 0
 
         for contentIdx, contentName in enumerate(content_files):
             content_image_path = os.path.join(opt.contentPath, contentName)
@@ -138,3 +138,6 @@ if __name__ == "__main__":
             # Output success message
             print(f'Transferred image saved at {output_img_path}')
             print(f'Transformation matrix saved at {matrix_save_path}')
+
+            # Debugging message to confirm path structure
+            print(f"Style directory: {style_output_dir}, Content: {content_base}, Counter: {image_counter}")

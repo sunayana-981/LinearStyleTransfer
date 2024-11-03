@@ -16,13 +16,13 @@ if __name__ == "__main__":
                         help='pre-trained encoder path')
     parser.add_argument("--decoder_dir", default='models/dec_r41.pth',
                         help='pre-trained decoder path')
-    parser.add_argument("--matrixPath", default='models/r41.pth',
+    parser.add_argument("--matrixPath", default='trainingOutput/r41.pth',
                         help='pre-trained model path')
     parser.add_argument("--stylePath", default="data/style/",
                         help='path to style image')
     parser.add_argument("--contentPath", default="data/content/",
                         help='path to frames')
-    parser.add_argument("--outf", default="output/",
+    parser.add_argument("--outf", default="outputs1/",
                         help='path to transferred images')
     parser.add_argument("--matrixOutf", default="Matrices/",
                         help='path to save transformation matrices')
@@ -141,3 +141,5 @@ if __name__ == "__main__":
 
             # Debugging message to confirm path structure
             print(f"Style directory: {style_output_dir}, Content: {content_base}, Counter: {image_counter}")
+
+

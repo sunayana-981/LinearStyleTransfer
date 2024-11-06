@@ -1,13 +1,12 @@
 ----------------- Options ---------------
                 batchSize: 8                             
               contentPath: ./datasets/coco2014/images/train2014
-           content_layers: ['r11']                       
+           content_layers: ['r41']                       
            content_weight: 1.0                           
                      cuda: True                          
               decoder_dir: models/dec_r41.pth            
                  fineSize: 256                           
                    gpu_id: 0                             
-                    layer: r41                           
                  loadSize: 300                           
              log_interval: 500                           
          loss_network_dir: models/vgg_r51.pth            
@@ -16,7 +15,7 @@
                      outf: trainingOutput/               
             save_interval: 5000                          
                 stylePath: ./datasets/wikiArt/           
-             style_layers: ['r21']                       
+             style_layers: ['r11', 'r21', 'r31', 'r41']  
              style_weight: 0.02                          
                   vgg_dir: models/vgg_r41.pth            
 ----------------- End -------------------

@@ -27,12 +27,9 @@ def main():
     # Define layers based on the MulLayer configuration
     LAYER_CONFIG = {
         'r11': 64,
-        'r21': 128,
-        'r31': 256,
-        'r41': 512,
-        'r51': 512
+        'r21': 128
     }
-    WORKING_LAYERS = list(LAYER_CONFIG.keys())
+    WORKING_LAYERS = list(LAYER_CONFIG.keys())  # Only r11 and r21
 
     ################# ARGUMENTS #################
     parser = argparse.ArgumentParser()
@@ -48,9 +45,9 @@ def main():
                         help='path to MSCOCO dataset')
     parser.add_argument("--outf", default="trainingOutput/",
                         help='folder to output images and model checkpoints')
-    parser.add_argument("--content_layers", default="r41",
+    parser.add_argument("--content_layers", default="r21",
                         help='layers for content')
-    parser.add_argument("--style_layers", default="r11,r21,r31,r41",
+    parser.add_argument("--style_layers", default="r11,r21",
                         help='layers for style')
     parser.add_argument("--batchSize", type=int, default=8,
                         help='batch size')
@@ -123,7 +120,7 @@ def main():
         vgg = encoder4()
         dec = decoder4()
         
-        # Create matrix layers for each configured layer
+        # Create matrix layers only for r11 and r21
         print(f"Creating matrix layers for: {WORKING_LAYERS}")
         matrix = {}
         for layer in WORKING_LAYERS:
@@ -133,7 +130,6 @@ def main():
             except Exception as e:
                 print(f"Error creating matrix layer {layer}: {e}")
 
-        # Load model weights
         print("Loading model weights...")
         vgg.load_state_dict(torch.load(opt.vgg_dir, weights_only=True))
         dec.load_state_dict(torch.load(opt.decoder_dir, weights_only=True))
@@ -145,8 +141,10 @@ def main():
             vgg.cuda()
             dec.cuda()
             vgg5.cuda()
-            for m in matrix.values():
-                m.cuda()
+            for layer in WORKING_LAYERS:
+                print(f"Moving matrix layer {layer} to GPU")
+                matrix[layer].cuda()
+            print("All models and tensors moved to GPU.")
 
         # Freeze encoder and decoder parameters
         for param in vgg.parameters():
@@ -155,6 +153,7 @@ def main():
             param.requires_grad = False
         for param in dec.parameters():
             param.requires_grad = False
+        print("Freezing parameters for vgg, vgg5, and decoder...")
 
     except Exception as e:
         print(f"Error in model initialization: {e}")
@@ -166,7 +165,11 @@ def main():
                             opt.style_weight,
                             opt.content_weight)
     
-    optimizer = optim.Adam([param for m in matrix.values() for param in m.parameters()], opt.lr)
+    # Create separate optimizers for each layer
+    optimizers = {
+        layer: optim.Adam(matrix[layer].parameters(), opt.lr) 
+        for layer in WORKING_LAYERS
+    }
 
     ################# TRAINING #################
     print("Starting training...")
@@ -178,7 +181,11 @@ def main():
         styleV = styleV.cuda()
 
     for iteration in range(1, opt.niter + 1):
-        optimizer.zero_grad()
+        print(f"\nIteration {iteration}/{opt.niter}")
+        
+        # Zero all optimizers
+        for opt_layer in optimizers.values():
+            opt_layer.zero_grad()
 
         try:
             content, _ = next(content_loader)
@@ -188,61 +195,76 @@ def main():
             style_loader = iter(style_loader_)
             content, _ = next(content_loader)
             style, _ = next(style_loader)
+        print("Batches fetched successfully.")
 
         contentV.resize_(content.size()).copy_(content)
         styleV.resize_(style.size()).copy_(style)
 
         # Forward pass
+        print("Computing features...")
         sF = vgg(styleV)
         cF = vgg(contentV)
 
-        # Process each configured layer
+        # Process each layer individually
+        print("Processing features through matrix layers...")
         features = {}
+        transformations = {}
+        losses = {}
+
         for layer in WORKING_LAYERS:
             try:
-                if layer in sF and layer in cF:
-                    features[layer], _ = matrix[layer](cF[layer], sF[layer])
-                    if iteration % 100 == 0:  # Print shapes less frequently
-                        print(f"Processed {layer} - Content shape: {cF[layer].shape}, Style shape: {sF[layer].shape}")
+                # Get transformed features and transformation matrix
+                features[layer], transformations[layer] = matrix[layer](cF[layer], sF[layer])
+                print(f"Processed layer {layer} successfully")
+                
+                # Process each layer's output individually
+                transfer_layer = dec(features[layer])
+                
+                # Compute loss for each layer
+                sF_loss = vgg5(styleV)
+                cF_loss = vgg5(contentV)
+                tF = vgg5(transfer_layer)
+                loss_layer, styleLoss_layer, contentLoss_layer = criterion(tF, sF_loss, cF_loss)
+                losses[layer] = {
+                    'total': loss_layer,
+                    'style': styleLoss_layer,
+                    'content': contentLoss_layer
+                }
+                
+                # Backward pass for each layer individually
+                loss_layer.backward()
+                optimizers[layer].step()
+                
+                print(f"Layer {layer} - Loss: {loss_layer.item():.4f}, "
+                      f"Style: {styleLoss_layer.item():.4f}, "
+                      f"Content: {contentLoss_layer.item():.4f}")
+
+                # Save transformed images for each layer
+                if iteration % opt.log_interval == 0:
+                    transfer_layer = transfer_layer.clamp(0, 1)
+                    concat = torch.cat((content, style, transfer_layer.cpu()), dim=0)
+                    vutils.save_image(concat, f'{opt.outf}/{layer}_{iteration}.png',
+                                    normalize=True, scale_each=True, nrow=opt.batchSize)
+
             except Exception as e:
                 print(f"Error processing layer {layer}: {e}")
                 continue
 
-        # Use r41 for transfer
-        if 'r41' in features:
-            transfer = dec(features['r41'])
-        else:
-            print("Warning: r41 features not available, using first available feature")
-            transfer = dec(next(iter(features.values())))
+        # Adjust learning rates
+        for layer in WORKING_LAYERS:
+            adjust_learning_rate(optimizers[layer], iteration)
 
-        # Compute loss
-        sF_loss = vgg5(styleV)
-        cF_loss = vgg5(contentV)
-        tF = vgg5(transfer)
-        loss, styleLoss, contentLoss = criterion(tF, sF_loss, cF_loss)
-
-        # Backward & optimization
-        loss.backward()
-        optimizer.step()
-
-        if iteration % 10 == 0:
-            print(f"Iteration: [{iteration}/{opt.niter}] "
-                  f"Loss: {loss.item():.4f} "
-                  f"Content: {contentLoss.item():.4f} "
-                  f"Style: {styleLoss.item():.4f} "
-                  f"LR: {optimizer.param_groups[0]['lr']:.6f}")
-
-        adjust_learning_rate(optimizer, iteration)
-
-        if iteration % opt.log_interval == 0:
-            transfer = transfer.clamp(0, 1)
-            concat = torch.cat((content, style, transfer.cpu()), dim=0)
-            vutils.save_image(concat, f'{opt.outf}/{iteration}.png',
-                            normalize=True, scale_each=True, nrow=opt.batchSize)
-
+        # Save transformation matrices and model states
         if iteration > 0 and iteration % opt.save_interval == 0:
             for layer in WORKING_LAYERS:
-                torch.save(matrix[layer].state_dict(), f'{opt.outf}/matrix_{layer}.pth')
+                # Save model state
+                torch.save(matrix[layer].state_dict(), 
+                         f'{opt.outf}/matrix_{layer}_{iteration}.pth')
+                
+                # Save transformation matrix
+                if layer in transformations:
+                    torch.save(transformations[layer], 
+                             f'{opt.outf}/transformation_{layer}_{iteration}.pth')
 
 if __name__ == '__main__':
     main()

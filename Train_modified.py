@@ -190,3 +190,9 @@ for iteration in range(1, opt.niter + 1):
     if iteration % opt.save_interval == 0:
         for layer in matrix:
             torch.save(matrix[layer].state_dict(), f'{opt.outf}/{layer}_{iteration}.pth')
+
+# After parsing arguments
+print("\nParsing style layers:")
+print(f"Raw style_layers argument: {opt.style_layers}")
+opt.style_layers = opt.style_layers.split(',')
+print(f"Processed style layers: {opt.style_layers}")

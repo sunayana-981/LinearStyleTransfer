@@ -22,6 +22,20 @@ class CNN(nn.Module):
                 nn.ReLU(inplace=True),
                 nn.Conv2d(128, matrixSize, 3, 1, 1)
             )
+        elif layer == 'r21':
+            # 128x128x128
+            self.convs = nn.Sequential(
+                nn.Conv2d(128, 64, 3, 1, 1),
+                nn.ReLU(inplace=True),
+                nn.Conv2d(64, matrixSize, 3, 1, 1)
+            )
+        elif layer == 'r11':
+            # 64x256x256
+            self.convs = nn.Sequential(
+                nn.Conv2d(64, matrixSize, 3, 1, 1)
+            )
+        else:
+            raise ValueError(f"Unsupported layer: {layer}. Must be one of ['r11', 'r21', 'r31', 'r41']")
 
         # Fully connected layer to produce transformation matrix
         self.fc = nn.Linear(matrixSize * matrixSize, matrixSize * matrixSize)
@@ -45,12 +59,20 @@ class MulLayer(nn.Module):
         self.matrixSize = matrixSize
 
         # Compression and decompression layers to adjust feature map channels
-        if layer == 'r41':
-            self.compress = nn.Conv2d(512, matrixSize, 1, 1, 0)
-            self.unzip = nn.Conv2d(matrixSize, 512, 1, 1, 0)
+        if layer == 'r11':
+            self.compress = nn.Conv2d(64, matrixSize, 1, 1, 0)
+            self.unzip = nn.Conv2d(matrixSize, 64, 1, 1, 0)
+        elif layer == 'r21':
+            self.compress = nn.Conv2d(128, matrixSize, 1, 1, 0)
+            self.unzip = nn.Conv2d(matrixSize, 128, 1, 1, 0)
         elif layer == 'r31':
             self.compress = nn.Conv2d(256, matrixSize, 1, 1, 0)
             self.unzip = nn.Conv2d(matrixSize, 256, 1, 1, 0)
+        elif layer == 'r41':
+            self.compress = nn.Conv2d(512, matrixSize, 1, 1, 0)
+            self.unzip = nn.Conv2d(matrixSize, 512, 1, 1, 0)
+        else:
+            raise ValueError(f"Unsupported layer: {layer}. Must be one of ['r11', 'r21', 'r31', 'r41']")
         self.transmatrix = None
 
     def forward(self, cF, sF, trans=True):
@@ -71,16 +93,25 @@ class MulLayer(nn.Module):
         sMeanS = sMean.expand_as(sF)
         sF = sF - sMeanS
 
+        # Add debug prints to check dimensions
+        print(f"Content feature dimensions: {cF.size()}")
+        print(f"Style feature dimensions: {sF.size()}")
+        
         # Compress content feature map to match the matrix size
         compress_content = self.compress(cF)
+        print(f"Compressed content dimensions: {compress_content.size()}")
+        
         b, c, h, w = compress_content.size()
         compress_content = compress_content.view(b, c, -1)
 
         if trans:
             # Compute transformation matrices for content and style
-            cMatrix = self.cnet(cF)
-            sMatrix = self.snet(sF)
-
+            cMatrix = self.cnet(cF)  # Make sure cF has correct channel count
+            sMatrix = self.snet(sF)  # Make sure sF has correct channel count
+            
+            print(f"Content matrix dimensions: {cMatrix.size()}")
+            print(f"Style matrix dimensions: {sMatrix.size()}")
+            
             # Reshape matrices to match dimensions for batch matrix multiplication
             sMatrix = sMatrix.view(sMatrix.size(0), self.matrixSize, self.matrixSize)
             cMatrix = cMatrix.view(cMatrix.size(0), self.matrixSize, self.matrixSize)

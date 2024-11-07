@@ -660,3 +660,79 @@ class decoder5(nn.Module):
         out = self.reflecPad27(out)
         out = self.conv27(out)
         return out
+
+class decoder1(nn.Module):
+    def __init__(self):
+        super(decoder1,self).__init__()
+        # decoder for r11 (64 channels)
+        self.reflecPad7 = nn.ReflectionPad2d((1,1,1,1))
+        self.conv7 = nn.Conv2d(64,64,3,1,0)  # Input: 64 channels
+        self.relu7 = nn.ReLU(inplace=True)
+        
+        self.reflecPad8 = nn.ReflectionPad2d((1,1,1,1))
+        self.conv8 = nn.Conv2d(64,64,3,1,0)
+        self.relu8 = nn.ReLU(inplace=True)
+        
+        self.reflecPad9 = nn.ReflectionPad2d((1,1,1,1))
+        self.conv9 = nn.Conv2d(64,32,3,1,0)
+        self.relu9 = nn.ReLU(inplace=True)
+        
+        self.reflecPad10 = nn.ReflectionPad2d((1,1,1,1))
+        self.conv10 = nn.Conv2d(32,3,3,1,0)  # Output: 3 channels
+
+    def forward(self,x):
+        out = self.reflecPad7(x)
+        out = self.conv7(out)
+        out = self.relu7(out)
+        out = self.reflecPad8(out)
+        out = self.conv8(out)
+        out = self.relu8(out)
+        out = self.reflecPad9(out)
+        out = self.conv9(out)
+        out = self.relu9(out)
+        out = self.reflecPad10(out)
+        out = self.conv10(out)
+        return out
+
+class decoder2(nn.Module):
+    def __init__(self):
+        super(decoder2,self).__init__()
+        # decoder for r21 (128 channels)
+        self.reflecPad7 = nn.ReflectionPad2d((1,1,1,1))
+        self.conv7 = nn.Conv2d(128,128,3,1,0)  # Input: 128 channels
+        self.relu7 = nn.ReLU(inplace=True)
+
+        self.unpool = nn.UpsamplingNearest2d(scale_factor=2)
+        
+        self.reflecPad8 = nn.ReflectionPad2d((1,1,1,1))
+        self.conv8 = nn.Conv2d(128,64,3,1,0)
+        self.relu8 = nn.ReLU(inplace=True)
+        
+        self.reflecPad9 = nn.ReflectionPad2d((1,1,1,1))
+        self.conv9 = nn.Conv2d(64,64,3,1,0)
+        self.relu9 = nn.ReLU(inplace=True)
+        
+        self.reflecPad10 = nn.ReflectionPad2d((1,1,1,1))
+        self.conv10 = nn.Conv2d(64,32,3,1,0)
+        self.relu10 = nn.ReLU(inplace=True)
+        
+        self.reflecPad11 = nn.ReflectionPad2d((1,1,1,1))
+        self.conv11 = nn.Conv2d(32,3,3,1,0)  # Output: 3 channels
+
+    def forward(self,x):
+        out = self.reflecPad7(x)
+        out = self.conv7(out)
+        out = self.relu7(out)
+        out = self.unpool(out)
+        out = self.reflecPad8(out)
+        out = self.conv8(out)
+        out = self.relu8(out)
+        out = self.reflecPad9(out)
+        out = self.conv9(out)
+        out = self.relu9(out)
+        out = self.reflecPad10(out)
+        out = self.conv10(out)
+        out = self.relu10(out)
+        out = self.reflecPad11(out)
+        out = self.conv11(out)
+        return out

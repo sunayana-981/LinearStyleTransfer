@@ -16,6 +16,7 @@ Artistic/
 outputs1/
 trainingOutput/
 stylized_outputs/
-
+trained_models/r11
+trained_models/r21
 
 

@@ -5,6 +5,7 @@
            content_weight: 1.0                           
                      cuda: True                          
               decoder_dir: models/dec_r41.pth            
+              dino_weight: 0.1                           
                  fineSize: 256                           
                    gpu_id: 0                             
                  loadSize: 300                           
@@ -15,7 +16,8 @@
                      outf: trainingOutput/               
             save_interval: 5000                          
                 stylePath: datasets/wikiArt/             
-             style_layers: ['r41']                       
+             style_layers: ['r11', 'r21', 'r31', 'r41']  
              style_weight: 0.02                          
+                 use_dino: True                          
                   vgg_dir: models/vgg_r41.pth            
 ----------------- End -------------------

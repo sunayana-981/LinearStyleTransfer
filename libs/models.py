@@ -736,3 +736,58 @@ class decoder2(nn.Module):
         out = self.reflecPad11(out)
         out = self.conv11(out)
         return out
+
+class encoder1(nn.Module):
+    def __init__(self):
+        super(encoder1,self).__init__()
+        # encoder for r11 (64 channels)
+        self.conv1 = nn.Conv2d(3,3,1,1,0)
+        self.reflecPad1 = nn.ReflectionPad2d((1,1,1,1))
+        self.conv2 = nn.Conv2d(3,64,3,1,0)
+        self.relu2 = nn.ReLU(inplace=True)
+        self.reflecPad3 = nn.ReflectionPad2d((1,1,1,1))
+        self.conv3 = nn.Conv2d(64,64,3,1,0)
+        self.relu3 = nn.ReLU(inplace=True)
+
+    def forward(self,x):
+        out = self.conv1(x)
+        out = self.reflecPad1(out)
+        out = self.conv2(out)
+        out = self.relu2(out)
+        out = self.reflecPad3(out)
+        out = self.conv3(out)
+        out = self.relu3(out)
+        return out
+
+class encoder2(nn.Module):
+    def __init__(self):
+        super(encoder2,self).__init__()
+        # encoder for r21 (128 channels)
+        # First part same as encoder1
+        self.conv1 = nn.Conv2d(3,3,1,1,0)
+        self.reflecPad1 = nn.ReflectionPad2d((1,1,1,1))
+        self.conv2 = nn.Conv2d(3,64,3,1,0)
+        self.relu2 = nn.ReLU(inplace=True)
+        self.reflecPad3 = nn.ReflectionPad2d((1,1,1,1))
+        self.conv3 = nn.Conv2d(64,64,3,1,0)
+        self.relu3 = nn.ReLU(inplace=True)
+        
+        # Additional layers for r21
+        self.maxPool = nn.MaxPool2d(kernel_size=2,stride=2)
+        self.reflecPad4 = nn.ReflectionPad2d((1,1,1,1))
+        self.conv4 = nn.Conv2d(64,128,3,1,0)
+        self.relu4 = nn.ReLU(inplace=True)
+
+    def forward(self,x):
+        out = self.conv1(x)
+        out = self.reflecPad1(out)
+        out = self.conv2(out)
+        out = self.relu2(out)
+        out = self.reflecPad3(out)
+        out = self.conv3(out)
+        out = self.relu3(out)
+        out = self.maxPool(out)
+        out = self.reflecPad4(out)
+        out = self.conv4(out)
+        out = self.relu4(out)
+        return out

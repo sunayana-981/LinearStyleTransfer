@@ -4,33 +4,42 @@ import torch.nn as nn
 class CNN(nn.Module):
     def __init__(self, layer, matrixSize=32):
         super(CNN, self).__init__()
-        # Dynamically initialize convolution layers based on the given layer
-        layer_config = {
-            'r11': (64, [64, 32]),
-            'r21': (128, [128, 64]),
-            'r31': (256, [256, 128, 64]),
-            'r41': (512, [512, 256, 128]),
-            'r51': (512, [512, 256, 128])
-        }
-        input_channels, channels = layer_config.get(layer, (256, [128, 64]))
-
-        layers = []
-        for out_channels in channels:
-            layers.append(nn.Conv2d(input_channels, out_channels, 3, 1, 1))
-            layers.append(nn.ReLU(inplace=True))
-            input_channels = out_channels
-        layers.append(nn.Conv2d(input_channels, matrixSize, 3, 1, 1))
-        
-        self.convs = nn.Sequential(*layers)
-        self.fc = nn.Linear(matrixSize * matrixSize, matrixSize * matrixSize)
-
-    def forward(self, x):
-        out = self.convs(x)
-        b, c, h, w = out.size()
-        out = out.view(b, c, -1)
-        out = torch.bmm(out, out.transpose(1, 2)).div(h * w)
-        out = out.view(out.size(0), -1)
-        return self.fc(out)
+        if layer == 'r11':
+            # 64x256x256
+            self.convs = nn.Sequential(
+                nn.Conv2d(64, 64, 3, 1, 1),
+                nn.ReLU(inplace=True),
+                nn.Conv2d(64, 32, 3, 1, 1),
+                nn.ReLU(inplace=True),
+                nn.Conv2d(32, matrixSize, 3, 1, 1)
+            )
+        elif layer == 'r21':
+            # 128x128x128
+            self.convs = nn.Sequential(
+                nn.Conv2d(128, 64, 3, 1, 1),
+                nn.ReLU(inplace=True),
+                nn.Conv2d(64, 32, 3, 1, 1),
+                nn.ReLU(inplace=True),
+                nn.Conv2d(32, matrixSize, 3, 1, 1)
+            )
+        elif layer == 'r31':
+            # 256x64x64
+            self.convs = nn.Sequential(
+                nn.Conv2d(256, 128, 3, 1, 1),
+                nn.ReLU(inplace=True),
+                nn.Conv2d(128, 64, 3, 1, 1),
+                nn.ReLU(inplace=True),
+                nn.Conv2d(64, matrixSize, 3, 1, 1)
+            )
+        elif layer == 'r41':
+            # 512x32x32
+            self.convs = nn.Sequential(
+                nn.Conv2d(512, 256, 3, 1, 1),
+                nn.ReLU(inplace=True),
+                nn.Conv2d(256, 128, 3, 1, 1),
+                nn.ReLU(inplace=True),
+                nn.Conv2d(128, matrixSize, 3, 1, 1)
+            )
 
 
 class MulLayer(nn.Module):

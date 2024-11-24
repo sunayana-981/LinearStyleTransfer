@@ -94,12 +94,12 @@ class MulLayer(nn.Module):
         sF = sF - sMeanS
 
         # Add debug prints to check dimensions
-        print(f"Content feature dimensions: {cF.size()}")
-        print(f"Style feature dimensions: {sF.size()}")
+        #print(f"Content feature dimensions: {cF.size()}")
+        #print(f"Style feature dimensions: {sF.size()}")
         
         # Compress content feature map to match the matrix size
         compress_content = self.compress(cF)
-        print(f"Compressed content dimensions: {compress_content.size()}")
+        #print(f"Compressed content dimensions: {compress_content.size()}")
         
         b, c, h, w = compress_content.size()
         compress_content = compress_content.view(b, c, -1)
@@ -109,8 +109,8 @@ class MulLayer(nn.Module):
             cMatrix = self.cnet(cF)  # Make sure cF has correct channel count
             sMatrix = self.snet(sF)  # Make sure sF has correct channel count
             
-            print(f"Content matrix dimensions: {cMatrix.size()}")
-            print(f"Style matrix dimensions: {sMatrix.size()}")
+            #print(f"Content matrix dimensions: {cMatrix.size()}")
+            #print(f"Style matrix dimensions: {sMatrix.size()}")
             
             # Reshape matrices to match dimensions for batch matrix multiplication
             sMatrix = sMatrix.view(sMatrix.size(0), self.matrixSize, self.matrixSize)

@@ -238,7 +238,6 @@ def train():
         return
 
     # Initialize models
-    vgg5 = loss_network().to(device)
     vgg1 = encoder1().to(device)
     vgg2 = encoder2().to(device)
     dec1 = decoder1().to(device)

@@ -190,69 +190,89 @@ class StyleCAVController:
     def collect_training_images(self, style_dir):
         """
         Collects paths to training images from the directory structure.
+        Expects structure like data/sharpened_styles/sharp_X.X/XX_sharp_X.X.png
         
         Args:
-            style_dir: Base directory for a style (e.g., 'data/styled_outputs/style_01')
+            style_dir: Base directory containing sharpened images
         Returns:
-            Tuple of (original image path, list of blur variation paths)
+            Tuple of (original image path, list of sharpened variation paths)
         """
-        style_path = Path(style_dir)
-        logger.info(f"Looking for sigma directories in: {style_dir}")
-        
-        # Find and sort sigma directories
-        sigma_dirs = []
-        for item in style_path.glob("sigma_*"):
-            if item.is_dir():
-                sigma_value = float(item.name.split('_')[1])
-                sigma_dirs.append((sigma_value, item))
-        
-        if not sigma_dirs:
-            raise ValueError(f"No sigma directories found in {style_dir}")
-        
-        sigma_dirs.sort(key=lambda x: x[0])
-        
-        # Collect image paths
-        image_paths = []
-        for _, sigma_dir in sigma_dirs:
-            png_files = list(sigma_dir.glob("*.png"))
-            if png_files:
-                image_paths.append(png_files[0])
-                logger.info(f"Found image: {png_files[0]}")
-        
-        if not image_paths:
-            raise ValueError("No valid image files found")
-        
-        return str(image_paths[0]), [str(p) for p in image_paths[1:]]
-    
+        try:
+            # Extract style number from the path
+            style_num = style_dir.split('style_')[-1]  # Gets '01' from 'style_01'
+            
+            # Find parent directory of sharpened styles
+            parent_dir = os.path.join('data', 'sharpened_styles')
+            # logger.info(f"Looking for sharpening directories in: {parent_dir}")
+            
+            # Get all sharp directories sorted by intensity
+            sharp_dirs = []
+            for item in os.listdir(parent_dir):
+                if item.startswith('sharp_') and os.path.isdir(os.path.join(parent_dir, item)):
+                    try:
+                        intensity = float(item.split('_')[1])
+                        sharp_dirs.append((intensity, item))
+                    except ValueError:
+                        continue
+            
+            if not sharp_dirs:
+                raise ValueError(f"No sharpening directories found in {parent_dir}")
+            
+            # Sort by intensity value
+            sharp_dirs.sort(key=lambda x: x[0])
+            logger.info(f"Found {len(sharp_dirs)} sharpening levels")
+            
+            # Collect image paths
+            image_paths = []
+            for _, sharp_dir in sharp_dirs:
+                image_name = f"{style_num}_sharp_{sharp_dir.split('_')[1]}.png"
+                image_path = os.path.join(parent_dir, sharp_dir, image_name)
+                
+                if os.path.exists(image_path):
+                    image_paths.append(image_path)
+                    # logger.info(f"Found image: {image_path}")
+                else:
+                    logger.warning(f"Missing image: {image_path}")
+            
+            if not image_paths:
+                raise ValueError("No valid image files found")
+            
+            # logger.info(f"Successfully collected {len(image_paths)} images")
+            return str(image_paths[0]), [str(p) for p in image_paths[1:]]
+            
+        except Exception as e:
+            logger.error(f"Error in collect_training_images: {str(e)}")
+            raise
+
     def learn_cav_from_directory(self, style_dir):
         """
-        Learns the CAV from existing blur variations in a style directory.
+        Learns the CAV from existing sharpening variations in a style directory.
         
         Args:
-            style_dir: Directory containing different blur sigma versions
+            style_dir: Directory containing different sharpening intensity versions
         Returns:
             Tensor containing the learned concept direction
         """
-        logger.info(f"Learning CAV from directory: {style_dir}")
-        original_path, blur_paths = self.collect_training_images(style_dir)
+        # logger.info(f"Learning CAV from directory: {style_dir}")
+        original_path, sharp_paths = self.collect_training_images(style_dir)
         
-        # Get features for original (least blurred) image
+        # Get features for original (least sharpened) image
         original_features = self.get_style_features(original_path)
         original_flat = original_features.view(original_features.size(0), -1).cpu().numpy()
         
-        # Get features for all blur variations
-        blur_features = []
-        for blur_path in blur_paths:
-            features = self.get_style_features(blur_path)
-            blur_features.append(features.view(features.size(0), -1).cpu().numpy())
+        # Get features for all sharpened variations
+        sharp_features = []
+        for sharp_path in sharp_paths:
+            features = self.get_style_features(sharp_path)
+            sharp_features.append(features.view(features.size(0), -1).cpu().numpy())
         
-        blur_flat = np.concatenate(blur_features, axis=0)
+        sharp_flat = np.concatenate(sharp_features, axis=0)
         
         # Prepare data for SVM training
-        features = np.concatenate([original_flat, blur_flat])
+        features = np.concatenate([original_flat, sharp_flat])
         labels = np.concatenate([
             np.zeros(len(original_flat)),
-            np.ones(len(blur_flat))
+            np.ones(len(sharp_flat))
         ])
         
         # Train SVM to find concept direction
@@ -261,7 +281,7 @@ class StyleCAVController:
         
         # Convert SVM direction to tensor
         cav = torch.tensor(svm.coef_[0]).reshape(original_features.shape[1:]).to(self.device)
-        logger.info("Successfully learned CAV")
+        # logger.info("Successfully learned sharpening CAV")
         return cav
 
     def apply_cav(self, content_image, style_image, cav, strength=1.0):
@@ -283,34 +303,34 @@ class StyleCAVController:
             content_image = content_image.float()
             style_image = style_image.float()
             
-            logger.info(f"\nCAV Application Debug:")
-            logger.info(f"Content image range: [{content_image.min():.3f}, {content_image.max():.3f}]")
-            logger.info(f"Style image range: [{style_image.min():.3f}, {style_image.max():.3f}]")
+            # logger.info(f"\nCAV Application Debug:")
+            # logger.info(f"Content image range: [{content_image.min():.3f}, {content_image.max():.3f}]")
+            # logger.info(f"Style image range: [{style_image.min():.3f}, {style_image.max():.3f}]")
             
             # Extract and analyze features
             content_features = self.vgg(content_image)[self.layer_name]
             style_features = self.vgg(style_image)[self.layer_name]
             
-            logger.info(f"Content features range: [{content_features.min():.3f}, {content_features.max():.3f}]")
-            logger.info(f"Style features range: [{style_features.min():.3f}, {style_features.max():.3f}]")
+            # logger.info(f"Content features range: [{content_features.min():.3f}, {content_features.max():.3f}]")
+            # logger.info(f"Style features range: [{style_features.min():.3f}, {style_features.max():.3f}]")
             
             # Get transformed features and analyze
             transformed_features, matrix = self.matrix(content_features, style_features)
             transformed_features = transformed_features.float()
             
-            logger.info(f"Transformed features stats:")
-            logger.info(f"  Range: [{transformed_features.min():.3f}, {transformed_features.max():.3f}]")
-            logger.info(f"  Mean: {transformed_features.mean():.3f}")
-            logger.info(f"  Std: {transformed_features.std():.3f}")
+            # logger.info(f"Transformed features stats:")
+            # logger.info(f"  Range: [{transformed_features.min():.3f}, {transformed_features.max():.3f}]")
+            # logger.info(f"  Mean: {transformed_features.mean():.3f}")
+            # logger.info(f"  Std: {transformed_features.std():.3f}")
             
             # Analyze CAV before application
             cav = cav.float()
             cav_norm = torch.norm(cav)
             feature_norm = torch.norm(transformed_features)
             
-            logger.info(f"\nCAV analysis:")
-            logger.info(f"CAV norm: {cav_norm:.3f}")
-            logger.info(f"Feature norm: {feature_norm:.3f}")
+            # logger.info(f"\nCAV analysis:")
+            # logger.info(f"CAV norm: {cav_norm:.3f}")
+            # logger.info(f"Feature norm: {feature_norm:.3f}")
             
             # Scale CAV to match feature magnitude
             scale_factor = feature_norm / cav_norm
@@ -324,17 +344,17 @@ class StyleCAVController:
             feature_diff = modified_features - transformed_features
             relative_change = torch.norm(feature_diff) / feature_norm
             
-            logger.info(f"\nCAV modification analysis:")
-            logger.info(f"Applied strength: {adaptive_strength:.3f}")
-            logger.info(f"Relative feature change: {relative_change:.3f}")
-            logger.info(f"Modified features range: [{modified_features.min():.3f}, {modified_features.max():.3f}]")
+            # logger.info(f"\nCAV modification analysis:")
+            # logger.info(f"Applied strength: {adaptive_strength:.3f}")
+            # logger.info(f"Relative feature change: {relative_change:.3f}")
+            # logger.info(f"Modified features range: [{modified_features.min():.3f}, {modified_features.max():.3f}]")
             
             # Generate and analyze final image
             result = self.decoder(modified_features)
             
-            logger.info(f"\nFinal image stats:")
-            logger.info(f"Output range: [{result.min():.3f}, {result.max():.3f}]")
-            logger.info(f"Output mean: {result.mean():.3f}")
+            # logger.info(f"\nFinal image stats:")
+            # logger.info(f"Output range: [{result.min():.3f}, {result.max():.3f}]")
+            # logger.info(f"Output mean: {result.mean():.3f}")
             
             return result.clamp(0, 1), matrix
 
@@ -354,7 +374,7 @@ def parse_args():
                       help='path to style image')
     parser.add_argument("--contentPath", default="data/content/",
                       help='path to frames')
-    parser.add_argument("--outf", default="Artistic/blur/",
+    parser.add_argument("--outf", default="Artistic/sharp/",
                       help='path to output images')
     parser.add_argument("--matrixOutf", default="Matrices/",
                       help='path to save transformation matrices')
@@ -371,12 +391,11 @@ def parse_args():
     parser.add_argument("--cav_scale_mode", choices=['adaptive', 'fixed'], default='adaptive',
                       help='how to scale CAV effects')
     parser.add_argument("--cav_strengths", type=float, nargs='+',
-                      default=[-2.0, -1.0, -0.5, 0.5, 1.0, 2.0],
+                      default=[-5.0 -4.0 -3.0 -2.0, -1.0, -0.5,0, 0.5, 1.0, 2.0,3.0, 4.0, 5.0],
                       help='strengths at which to apply CAV')
     return parser.parse_args()
 
 def main():
-    """Main function implementing CAV-controlled style transfer."""
     opt = parse_args()
     opt.cuda = torch.cuda.is_available()
     print_options(opt)
@@ -384,158 +403,98 @@ def main():
     # Create output directories
     os.makedirs(opt.outf, exist_ok=True)
     os.makedirs(opt.matrixOutf, exist_ok=True)
-    cudnn.benchmark = True
-    
-    # Initialize data loaders
-    content_dataset = Dataset(opt.contentPath, opt.loadSize, opt.fineSize)
-    content_loader = torch.utils.data.DataLoader(dataset=content_dataset,
-                                               batch_size=opt.batchSize,
-                                               shuffle=False,
-                                               num_workers=0)
-    
-    style_dataset = Dataset(opt.stylePath, opt.loadSize, opt.fineSize)
-    style_loader = torch.utils.data.DataLoader(dataset=style_dataset,
-                                             batch_size=opt.batchSize,
-                                             shuffle=False,
-                                             num_workers=0)
-    
-    # Initialize models
-    vgg = encoder4() if opt.layer == 'r41' else encoder3()
-    dec = decoder4() if opt.layer == 'r41' else decoder3()
-    matrix = MulLayer(opt.layer)
-    
-    # Load model weights
-    vgg.load_state_dict(torch.load(opt.vgg_dir))
-    dec.load_state_dict(torch.load(opt.decoder_dir))
-    matrix.load_state_dict(torch.load(opt.matrixPath))
-    
-    # Move models to GPU if available
-    if opt.cuda:
-        vgg.cuda()
-        dec.cuda()
-        matrix.cuda()
-    
-    # Initialize CAV controller
-    cav_controller = StyleCAVController(vgg, matrix, dec, opt.layer)
-    
-    # Process each content-style pair
-def main():
-    """
-    Main function implementing CAV-controlled style transfer with corrected file naming.
-    This version properly handles content and style image names for output files.
-    """
-    opt = parse_args()
-    opt.cuda = torch.cuda.is_available()
-    print_options(opt)
-    
-    # Create output directories
-    os.makedirs(opt.outf, exist_ok=True)
-    os.makedirs(opt.matrixOutf, exist_ok=True)
-    cudnn.benchmark = True
-    
-    # Initialize data loaders
-    content_dataset = Dataset(opt.contentPath, opt.loadSize, opt.fineSize)
-    content_loader = torch.utils.data.DataLoader(dataset=content_dataset,
-                                               batch_size=opt.batchSize,
-                                               shuffle=False,
-                                               num_workers=0)
-    
-    style_dataset = Dataset(opt.stylePath, opt.loadSize, opt.fineSize)
-    style_loader = torch.utils.data.DataLoader(dataset=style_dataset,
-                                             batch_size=opt.batchSize,
-                                             shuffle=False,
-                                             num_workers=0)
-    
-    # Initialize models
-    vgg = encoder4() if opt.layer == 'r41' else encoder3()
-    dec = decoder4() if opt.layer == 'r41' else decoder3()
-    matrix = MulLayer(opt.layer)
-    
-    # Load model weights
-    vgg.load_state_dict(torch.load(opt.vgg_dir))
-    dec.load_state_dict(torch.load(opt.decoder_dir))
-    matrix.load_state_dict(torch.load(opt.matrixPath))
-    
-    if opt.cuda:
-        vgg.cuda()
-        dec.cuda()
-        matrix.cuda()
-    
-    cav_controller = StyleCAVController(vgg, matrix, dec, opt.layer)
     comparison_dir = os.path.join(opt.outf, 'comparisons')
     os.makedirs(comparison_dir, exist_ok=True)
+    
+    # Ensure the sharpened styles directory exists
+    sharpened_styles_dir = os.path.join('data', 'sharpened_styles')
+    if not os.path.exists(sharpened_styles_dir):
+        raise ValueError(f"Sharpened styles directory not found: {sharpened_styles_dir}")
+    
+    # Initialize data loaders
+    content_dataset = Dataset(opt.contentPath, opt.loadSize, opt.fineSize)
+    content_loader = torch.utils.data.DataLoader(dataset=content_dataset,
+                                               batch_size=opt.batchSize,
+                                               shuffle=False,
+                                               num_workers=0)
+    
+    style_dataset = Dataset(opt.stylePath, opt.loadSize, opt.fineSize)
+    style_loader = torch.utils.data.DataLoader(dataset=style_dataset,
+                                             batch_size=opt.batchSize,
+                                             shuffle=False,
+                                             num_workers=0)
+    
+    # Initialize models with weights_only=True
+    vgg = encoder4() if opt.layer == 'r41' else encoder3()
+    dec = decoder4() if opt.layer == 'r41' else decoder3()
+    matrix = MulLayer(opt.layer)
+    
+    # Load model weights safely
+    vgg.load_state_dict(torch.load(opt.vgg_dir, weights_only=True))
+    dec.load_state_dict(torch.load(opt.decoder_dir, weights_only=True))
+    matrix.load_state_dict(torch.load(opt.matrixPath, weights_only=True))
+    
+    if opt.cuda:
+        vgg.cuda()
+        dec.cuda()
+        matrix.cuda()
+    
+    cav_controller = StyleCAVController(vgg, matrix, dec, opt.layer)
     visualizer = CAVVisualizer(len(opt.cav_strengths))
     
     # Process each content-style pair
     for content_idx, (content, contentName) in enumerate(content_loader):
-            # Convert content tensor name to string and get the base filename
-            if isinstance(contentName, (list, tuple)):
-                content_name = contentName[0]  # Extract from list/tuple if needed
-            else:
-                content_name = contentName
+        content_num = content_idx + 1
+        contentV = content.cuda() if opt.cuda else content
+        
+        for style_idx, (style, styleName) in enumerate(style_loader):
+            style_num = style_idx + 1
+            styleV = style.cuda() if opt.cuda else style
             
-            content_num = content_idx + 1
-            contentV = content.cuda() if opt.cuda else content
+            style_dir = f'style_{style_num:02d}'
+            logger.info(f"Processing content {content_num:02d} with {style_dir}")
             
-            for style_idx, (style, styleName) in enumerate(style_loader):
-                # Convert style tensor name to string and extract style number
-                if isinstance(styleName, (list, tuple)):
-                    style_name = styleName[0]  # Extract from list/tuple if needed
-                else:
-                    style_name = styleName
+            try:
+                # Learn CAV from sharpened variations
+                blur_cav = cav_controller.learn_cav_from_directory(style_dir)
                 
-                styleV = style.cuda() if opt.cuda else style
-                
-                # Get style number ensuring it starts from 1
-                style_num = max(1, style_idx + 1)
-                style_output_dir = os.path.join(opt.data_dir, 'styled_outputs', f'style_{style_num:02d}')
-                
-                logger.info(f"Processing content {content_num:02d} with style {style_num:02d}")
-                
-                try:
-                    # Learn CAV from existing blur variations
-                    blur_cav = cav_controller.learn_cav_from_directory(style_output_dir)
-                    
-                    transfers = []
-                    # Create new variations with different CAV strengths
-                    for strength in opt.cav_strengths:
-                        # Apply CAV modification
-                        transfer, matrix = cav_controller.apply_cav(
-                            contentV, styleV, blur_cav, strength
-                        )
-                        
-                        transfers.append(transfer)
-                        # Create descriptive filename using indices
-                        output_filename = (
-                            f'cav_content{content_num:02d}_'
-                            f'style_{style_num:02d}_'
-                            f'strength_{strength:.1f}.png'
-                        )
-                        output_path = os.path.join(opt.outf, output_filename)
-                        
-                        # Create corresponding matrix filename
-                        matrix_filename = (
-                        f'cav_content{content_idx:02d}_'
-                        f'style_{style_num:02d}_'
-                        f'strength_{strength:.1f}_matrix.pth'
-                    )
-                        matrix_path = os.path.join(opt.matrixOutf, matrix_filename)
-                        torch.save(matrix, matrix_path)
-                    
-                    # Create comparison plot for this content-style pair
-                    visualizer.create_comparison_plot(
-                        transfers,
-                        opt.cav_strengths,
-                        contentV,
-                        styleV,
-                        comparison_dir,
-                        content_idx,
-                        style_num
+                transfers = []
+                for strength in opt.cav_strengths:
+                    # Apply CAV modification
+                    transfer, matrix = cav_controller.apply_cav(
+                        contentV, styleV, blur_cav, strength
                     )
                     
-                except Exception as e:
-                    logger.error(f"Error processing content {content_idx} with style {style_num}: {str(e)}")
-                    continue
+                    transfers.append(transfer)
+                    
+                    # Save outputs with clean filenames
+                    output_filename = f'cav_content{content_num:02d}_style_{style_num:02d}_strength_{strength:.1f}.png'
+                    matrix_filename = f'cav_content{content_num:02d}_style_{style_num:02d}_strength_{strength:.1f}_matrix.pth'
+                    
+                    # vutils.save_image(
+                    #     transfer.clamp(0, 1),
+                    #     os.path.join(opt.outf, output_filename),
+                    #     normalize=True,
+                    #     scale_each=True
+                    # )
+                    
+                    torch.save(matrix, os.path.join(opt.matrixOutf, matrix_filename))
+                
+                # Create comparison plot
+                visualizer.create_comparison_plot(
+                    transfers,
+                    opt.cav_strengths,
+                    contentV,
+                    styleV,
+                    comparison_dir,
+                    content_num,
+                    style_num
+                )
+                
+            except Exception as e:
+                logger.error(f"Error processing {style_dir}: {str(e)}")
+                logger.error(f"Skipping to next style...")
+                continue
 
 if __name__ == "__main__":
     main()

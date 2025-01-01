@@ -13,7 +13,7 @@ if __name__ == "__main__":
     from libs.models import decoder3, decoder4, decoder5
     from tqdm import tqdm
 
-    def generate_blur_dataset(style_dir, output_dir, sigma_levels=[5, 10, 15, 20,25,30,25,40,45,50]):
+    def generate_blur_dataset(style_dir, output_dir, sigma_levels=[1, 3, 5, 10,15,20,25,30,35,40]):
         """Generate a dataset of blurred images for different sigma levels."""
         os.makedirs(output_dir, exist_ok=True)
 

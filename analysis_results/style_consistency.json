@@ -1,0 +1,785 @@
+{
+  "Abstract_Expressionism": {
+    "color": {
+      "mean_variance": 0.04892582293741241,
+      "per_prompt_variance": {
+        "an image with warm colors": 0.020075257498679503,
+        "an image with cool colors": 0.002591331168839388,
+        "an image with vibrant colors": 0.07223406030527307,
+        "an image with muted colors": 0.10080264277685769
+      }
+    },
+    "texture": {
+      "mean_variance": 0.027730261055778707,
+      "per_prompt_variance": {
+        "an image with rough texture": 0.041625407206794474,
+        "an image with smooth texture": 0.01631950855054818,
+        "an image with regular patterns": 0.008493696166346114,
+        "an image with irregular patterns": 0.04448243229942606
+      }
+    },
+    "composition": {
+      "mean_variance": 0.01236030180172851,
+      "per_prompt_variance": {
+        "an image with balanced composition": 0.008643235719756222,
+        "an image with dynamic composition": 0.0039144065043469475,
+        "an image with minimal composition": 0.01230108466488024,
+        "an image with complex composition": 0.024582480317930634
+      }
+    }
+  },
+  "Action_painting": {
+    "color": {
+      "mean_variance": 0.04000141574863457,
+      "per_prompt_variance": {
+        "an image with warm colors": 0.011471484501023376,
+        "an image with cool colors": 0.0020646044505952554,
+        "an image with vibrant colors": 0.05657176485733237,
+        "an image with muted colors": 0.08989780918558729
+      }
+    },
+    "texture": {
+      "mean_variance": 0.026593049367364195,
+      "per_prompt_variance": {
+        "an image with rough texture": 0.04689640270119258,
+        "an image with smooth texture": 0.005461158992295534,
+        "an image with regular patterns": 0.005123824567252031,
+        "an image with irregular patterns": 0.04889081120871665
+      }
+    },
+    "composition": {
+      "mean_variance": 0.01128246878267002,
+      "per_prompt_variance": {
+        "an image with balanced composition": 0.008959423070657647,
+        "an image with dynamic composition": 0.001935593504624845,
+        "an image with minimal composition": 0.0075776790682837965,
+        "an image with complex composition": 0.026657179487113786
+      }
+    }
+  },
+  "Analytical_Cubism": {
+    "color": {
+      "mean_variance": 0.014888790070848123,
+      "per_prompt_variance": {
+        "an image with warm colors": 0.020279927298739318,
+        "an image with cool colors": 0.00020200047232779447,
+        "an image with vibrant colors": 0.0028058399794410422,
+        "an image with muted colors": 0.036267392532884336
+      }
+    },
+    "texture": {
+      "mean_variance": 0.011352660174819233,
+      "per_prompt_variance": {
+        "an image with rough texture": 0.011199018566436094,
+        "an image with smooth texture": 0.0017843835959958903,
+        "an image with regular patterns": 0.008459936049513587,
+        "an image with irregular patterns": 0.023967302487331355
+      }
+    },
+    "composition": {
+      "mean_variance": 0.003512817324176654,
+      "per_prompt_variance": {
+        "an image with balanced composition": 0.0032213394885650492,
+        "an image with dynamic composition": 0.00280938493914699,
+        "an image with minimal composition": 8.248584568634705e-05,
+        "an image with complex composition": 0.007938059023308231
+      }
+    }
+  },
+  "Art_Nouveau_Modern": {
+    "color": {
+      "mean_variance": 0.027779743230898983,
+      "per_prompt_variance": {
+        "an image with warm colors": 0.04059142080348657,
+        "an image with cool colors": 0.0030062305584070076,
+        "an image with vibrant colors": 0.014724501750215875,
+        "an image with muted colors": 0.05279681981148648
+      }
+    },
+    "texture": {
+      "mean_variance": 0.024774665061810985,
+      "per_prompt_variance": {
+        "an image with rough texture": 0.01576890106911924,
+        "an image with smooth texture": 0.009814759875960978,
+        "an image with regular patterns": 0.04754563995986834,
+        "an image with irregular patterns": 0.025969359342295387
+      }
+    },
+    "composition": {
+      "mean_variance": 0.00733601245889343,
+      "per_prompt_variance": {
+        "an image with balanced composition": 0.007445106543447388,
+        "an image with dynamic composition": 0.0060873912391259145,
+        "an image with minimal composition": 0.000535140630499861,
+        "an image with complex composition": 0.015276411422500554
+      }
+    }
+  },
+  "Baroque": {
+    "color": {
+      "mean_variance": 0.020675900608594668,
+      "per_prompt_variance": {
+        "an image with warm colors": 0.03848940987611662,
+        "an image with cool colors": 0.0005277613734720075,
+        "an image with vibrant colors": 0.0012434294199860573,
+        "an image with muted colors": 0.04244300176480399
+      }
+    },
+    "texture": {
+      "mean_variance": 0.01960034600769356,
+      "per_prompt_variance": {
+        "an image with rough texture": 0.024628390274787037,
+        "an image with smooth texture": 0.010132149982694046,
+        "an image with regular patterns": 0.02725120182715538,
+        "an image with irregular patterns": 0.016389641946137772
+      }
+    },
+    "composition": {
+      "mean_variance": 0.005907949190409411,
+      "per_prompt_variance": {
+        "an image with balanced composition": 0.006855914253209437,
+        "an image with dynamic composition": 0.004711681930023931,
+        "an image with minimal composition": 0.00020832995940740125,
+        "an image with complex composition": 0.011855870618996876
+      }
+    }
+  },
+  "Color_Field_Painting": {
+    "color": {
+      "mean_variance": 0.05345539875924388,
+      "per_prompt_variance": {
+        "an image with warm colors": 0.046595764475752526,
+        "an image with cool colors": 0.017254484216598316,
+        "an image with vibrant colors": 0.04585258458884612,
+        "an image with muted colors": 0.10411876175577857
+      }
+    },
+    "texture": {
+      "mean_variance": 0.019367778438624937,
+      "per_prompt_variance": {
+        "an image with rough texture": 0.011362528249441126,
+        "an image with smooth texture": 0.01503964884057523,
+        "an image with regular patterns": 0.01975571898450007,
+        "an image with irregular patterns": 0.03131321767998333
+      }
+    },
+    "composition": {
+      "mean_variance": 0.011643713614172511,
+      "per_prompt_variance": {
+        "an image with balanced composition": 0.011697155911552716,
+        "an image with dynamic composition": 0.0014546702574243502,
+        "an image with minimal composition": 0.014218223123596017,
+        "an image with complex composition": 0.01920480516411696
+      }
+    }
+  },
+  "Contemporary_Realism": {
+    "color": {
+      "mean_variance": 0.02700407423063238,
+      "per_prompt_variance": {
+        "an image with warm colors": 0.025663552155341964,
+        "an image with cool colors": 0.007276245420805654,
+        "an image with vibrant colors": 0.01731120837721493,
+        "an image with muted colors": 0.05776529096916698
+      }
+    },
+    "texture": {
+      "mean_variance": 0.018179138710809742,
+      "per_prompt_variance": {
+        "an image with rough texture": 0.015335759293653096,
+        "an image with smooth texture": 0.019704317587629937,
+        "an image with regular patterns": 0.014208157146941326,
+        "an image with irregular patterns": 0.023468320815014612
+      }
+    },
+    "composition": {
+      "mean_variance": 0.009953679212066278,
+      "per_prompt_variance": {
+        "an image with balanced composition": 0.014084488940598017,
+        "an image with dynamic composition": 0.008320424241053233,
+        "an image with minimal composition": 0.003922826954810319,
+        "an image with complex composition": 0.013486976711803544
+      }
+    }
+  },
+  "Cubism": {
+    "color": {
+      "mean_variance": 0.03684986956592034,
+      "per_prompt_variance": {
+        "an image with warm colors": 0.03518777309284505,
+        "an image with cool colors": 0.001955448025004671,
+        "an image with vibrant colors": 0.03032310308534219,
+        "an image with muted colors": 0.07993315406048945
+      }
+    },
+    "texture": {
+      "mean_variance": 0.015465998253063315,
+      "per_prompt_variance": {
+        "an image with rough texture": 0.01510086966791941,
+        "an image with smooth texture": 0.004654308236591829,
+        "an image with regular patterns": 0.012418408654517646,
+        "an image with irregular patterns": 0.029690406453224377
+      }
+    },
+    "composition": {
+      "mean_variance": 0.004032947498635876,
+      "per_prompt_variance": {
+        "an image with balanced composition": 0.004772778665978923,
+        "an image with dynamic composition": 0.0019027317410131562,
+        "an image with minimal composition": 0.000592275841891907,
+        "an image with complex composition": 0.008864003745659517
+      }
+    }
+  },
+  "Early_Renaissance": {
+    "color": {
+      "mean_variance": 0.024834392233382255,
+      "per_prompt_variance": {
+        "an image with warm colors": 0.03201085621244803,
+        "an image with cool colors": 0.0012048698031117977,
+        "an image with vibrant colors": 0.009552383315340392,
+        "an image with muted colors": 0.05656945960262881
+      }
+    },
+    "texture": {
+      "mean_variance": 0.02011952736736496,
+      "per_prompt_variance": {
+        "an image with rough texture": 0.029757942357119673,
+        "an image with smooth texture": 0.007986226282192692,
+        "an image with regular patterns": 0.021447339541925257,
+        "an image with irregular patterns": 0.021286601288222223
+      }
+    },
+    "composition": {
+      "mean_variance": 0.004217660329367246,
+      "per_prompt_variance": {
+        "an image with balanced composition": 0.00551295204102925,
+        "an image with dynamic composition": 0.0026276745957418326,
+        "an image with minimal composition": 0.00027786699537587394,
+        "an image with complex composition": 0.008452147685322028
+      }
+    }
+  },
+  "Expressionism": {
+    "color": {
+      "mean_variance": 0.03791623432709476,
+      "per_prompt_variance": {
+        "an image with warm colors": 0.05139741964162506,
+        "an image with cool colors": 0.002305442417844839,
+        "an image with vibrant colors": 0.01642338686984828,
+        "an image with muted colors": 0.08153868837906085
+      }
+    },
+    "texture": {
+      "mean_variance": 0.028014356935315454,
+      "per_prompt_variance": {
+        "an image with rough texture": 0.0474993719839839,
+        "an image with smooth texture": 0.005605015715032449,
+        "an image with regular patterns": 0.03225509881116206,
+        "an image with irregular patterns": 0.026697941231083412
+      }
+    },
+    "composition": {
+      "mean_variance": 0.007009600387824267,
+      "per_prompt_variance": {
+        "an image with balanced composition": 0.005467643354163788,
+        "an image with dynamic composition": 0.005430898052685207,
+        "an image with minimal composition": 0.001249645662100813,
+        "an image with complex composition": 0.015890214482347263
+      }
+    }
+  },
+  "Fauvism": {
+    "color": {
+      "mean_variance": 0.031944152342444444,
+      "per_prompt_variance": {
+        "an image with warm colors": 0.04382943621298983,
+        "an image with cool colors": 0.002298071864762048,
+        "an image with vibrant colors": 0.053721659720651814,
+        "an image with muted colors": 0.02792744157137409
+      }
+    },
+    "texture": {
+      "mean_variance": 0.017599596604873986,
+      "per_prompt_variance": {
+        "an image with rough texture": 0.016793437683703106,
+        "an image with smooth texture": 0.010367740175339724,
+        "an image with regular patterns": 0.01662111197658119,
+        "an image with irregular patterns": 0.026616096583871932
+      }
+    },
+    "composition": {
+      "mean_variance": 0.0057750212274360994,
+      "per_prompt_variance": {
+        "an image with balanced composition": 0.007058537710526033,
+        "an image with dynamic composition": 0.0037722569050194586,
+        "an image with minimal composition": 0.0009706905643595974,
+        "an image with complex composition": 0.01129859972983931
+      }
+    }
+  },
+  "High_Renaissance": {
+    "color": {
+      "mean_variance": 0.019803797969449335,
+      "per_prompt_variance": {
+        "an image with warm colors": 0.026844968868667496,
+        "an image with cool colors": 0.00044348334035034464,
+        "an image with vibrant colors": 0.005534955587375794,
+        "an image with muted colors": 0.04639178408140371
+      }
+    },
+    "texture": {
+      "mean_variance": 0.02115423884548342,
+      "per_prompt_variance": {
+        "an image with rough texture": 0.03429806135344048,
+        "an image with smooth texture": 0.007049255743088036,
+        "an image with regular patterns": 0.02351385389594078,
+        "an image with irregular patterns": 0.01975578438946439
+      }
+    },
+    "composition": {
+      "mean_variance": 0.004181929949244446,
+      "per_prompt_variance": {
+        "an image with balanced composition": 0.004968276106519927,
+        "an image with dynamic composition": 0.00353947060434114,
+        "an image with minimal composition": 0.0008627832567764573,
+        "an image with complex composition": 0.007357189829340261
+      }
+    }
+  },
+  "Impressionism": {
+    "color": {
+      "mean_variance": 0.019226031305729044,
+      "per_prompt_variance": {
+        "an image with warm colors": 0.024935076385458756,
+        "an image with cool colors": 0.00018003337968780327,
+        "an image with vibrant colors": 0.011085485955640653,
+        "an image with muted colors": 0.04070352950212896
+      }
+    },
+    "texture": {
+      "mean_variance": 0.018085865332997983,
+      "per_prompt_variance": {
+        "an image with rough texture": 0.03268774591568022,
+        "an image with smooth texture": 0.008761513692957216,
+        "an image with regular patterns": 0.01923383152545087,
+        "an image with irregular patterns": 0.011660370197903627
+      }
+    },
+    "composition": {
+      "mean_variance": 0.007041499074859649,
+      "per_prompt_variance": {
+        "an image with balanced composition": 0.008750286975194053,
+        "an image with dynamic composition": 0.0034164982652243954,
+        "an image with minimal composition": 0.0013466384476606785,
+        "an image with complex composition": 0.01465257261135947
+      }
+    }
+  },
+  "Mannerism_Late_Renaissance": {
+    "color": {
+      "mean_variance": 0.01900607343806738,
+      "per_prompt_variance": {
+        "an image with warm colors": 0.023087928673511362,
+        "an image with cool colors": 0.0017196361748297545,
+        "an image with vibrant colors": 0.009021761832207657,
+        "an image with muted colors": 0.04219496707172074
+      }
+    },
+    "texture": {
+      "mean_variance": 0.01956473481671231,
+      "per_prompt_variance": {
+        "an image with rough texture": 0.025191227890151408,
+        "an image with smooth texture": 0.009827235401564723,
+        "an image with regular patterns": 0.03334172301914327,
+        "an image with irregular patterns": 0.009898752955989847
+      }
+    },
+    "composition": {
+      "mean_variance": 0.00518725758904535,
+      "per_prompt_variance": {
+        "an image with balanced composition": 0.008385456482642962,
+        "an image with dynamic composition": 0.003052954328886542,
+        "an image with minimal composition": 0.0004194079660021289,
+        "an image with complex composition": 0.008891211578649767
+      }
+    }
+  },
+  "Minimalism": {
+    "color": {
+      "mean_variance": 0.02409918268500995,
+      "per_prompt_variance": {
+        "an image with warm colors": 0.027726497333946498,
+        "an image with cool colors": 0.008006227925803662,
+        "an image with vibrant colors": 0.0066935787464041975,
+        "an image with muted colors": 0.053970426733885433
+      }
+    },
+    "texture": {
+      "mean_variance": 0.02100081575790268,
+      "per_prompt_variance": {
+        "an image with rough texture": 0.01779611525081245,
+        "an image with smooth texture": 0.015842958836992903,
+        "an image with regular patterns": 0.02254062335417725,
+        "an image with irregular patterns": 0.027823565589628122
+      }
+    },
+    "composition": {
+      "mean_variance": 0.011366833508362081,
+      "per_prompt_variance": {
+        "an image with balanced composition": 0.012633000293523367,
+        "an image with dynamic composition": 0.0024576864767785595,
+        "an image with minimal composition": 0.013676982263438055,
+        "an image with complex composition": 0.01669966499970834
+      }
+    }
+  },
+  "Naive_Art_Primitivism": {
+    "color": {
+      "mean_variance": 0.040888655617778706,
+      "per_prompt_variance": {
+        "an image with warm colors": 0.040805776396975,
+        "an image with cool colors": 0.0020526079994358888,
+        "an image with vibrant colors": 0.04433768452187044,
+        "an image with muted colors": 0.0763585535528335
+      }
+    },
+    "texture": {
+      "mean_variance": 0.017208650931669726,
+      "per_prompt_variance": {
+        "an image with rough texture": 0.014436013226630528,
+        "an image with smooth texture": 0.011153760968429231,
+        "an image with regular patterns": 0.02672183216587745,
+        "an image with irregular patterns": 0.01652299736574169
+      }
+    },
+    "composition": {
+      "mean_variance": 0.007112586743049076,
+      "per_prompt_variance": {
+        "an image with balanced composition": 0.009060134032857546,
+        "an image with dynamic composition": 0.005583392694450808,
+        "an image with minimal composition": 0.0006004497058086289,
+        "an image with complex composition": 0.013206370539079321
+      }
+    }
+  },
+  "New_Realism": {
+    "color": {
+      "mean_variance": 0.027173202242098307,
+      "per_prompt_variance": {
+        "an image with warm colors": 0.04569390277355674,
+        "an image with cool colors": 0.0015122678802279514,
+        "an image with vibrant colors": 0.004136991114659355,
+        "an image with muted colors": 0.057349647199949186
+      }
+    },
+    "texture": {
+      "mean_variance": 0.01735852805116934,
+      "per_prompt_variance": {
+        "an image with rough texture": 0.018599790631500867,
+        "an image with smooth texture": 0.019037276616586548,
+        "an image with regular patterns": 0.013866634295592921,
+        "an image with irregular patterns": 0.01793041066099703
+      }
+    },
+    "composition": {
+      "mean_variance": 0.00743257201715344,
+      "per_prompt_variance": {
+        "an image with balanced composition": 0.006010727123715262,
+        "an image with dynamic composition": 0.006698963215513784,
+        "an image with minimal composition": 0.003212749224098958,
+        "an image with complex composition": 0.013807848505285755
+      }
+    }
+  },
+  "Northern_Renaissance": {
+    "color": {
+      "mean_variance": 0.029646601645932157,
+      "per_prompt_variance": {
+        "an image with warm colors": 0.04016788612764056,
+        "an image with cool colors": 0.0015379310431656655,
+        "an image with vibrant colors": 0.008991179120173083,
+        "an image with muted colors": 0.06788941029274932
+      }
+    },
+    "texture": {
+      "mean_variance": 0.01863024194436918,
+      "per_prompt_variance": {
+        "an image with rough texture": 0.02191764757675263,
+        "an image with smooth texture": 0.006431893714813397,
+        "an image with regular patterns": 0.02674438865847149,
+        "an image with irregular patterns": 0.01942703782743919
+      }
+    },
+    "composition": {
+      "mean_variance": 0.005973512169244188,
+      "per_prompt_variance": {
+        "an image with balanced composition": 0.0074867998659169654,
+        "an image with dynamic composition": 0.004484409205596593,
+        "an image with minimal composition": 0.0003934549101624891,
+        "an image with complex composition": 0.011529384695300708
+      }
+    }
+  },
+  "Pointillism": {
+    "color": {
+      "mean_variance": 0.029315141319361457,
+      "per_prompt_variance": {
+        "an image with warm colors": 0.03977900070594224,
+        "an image with cool colors": 0.0016228417797405417,
+        "an image with vibrant colors": 0.011536764045021807,
+        "an image with muted colors": 0.06432195874674124
+      }
+    },
+    "texture": {
+      "mean_variance": 0.016874046862495946,
+      "per_prompt_variance": {
+        "an image with rough texture": 0.0208739963603415,
+        "an image with smooth texture": 0.008962575797421697,
+        "an image with regular patterns": 0.018276354384952672,
+        "an image with irregular patterns": 0.01938326090726791
+      }
+    },
+    "composition": {
+      "mean_variance": 0.005498659918302512,
+      "per_prompt_variance": {
+        "an image with balanced composition": 0.0044972780183769445,
+        "an image with dynamic composition": 0.00457437959338471,
+        "an image with minimal composition": 0.0020063979146318477,
+        "an image with complex composition": 0.010916584146816545
+      }
+    }
+  },
+  "Pop_Art": {
+    "color": {
+      "mean_variance": 0.03659042503583369,
+      "per_prompt_variance": {
+        "an image with warm colors": 0.029449116254675282,
+        "an image with cool colors": 0.014048406245599308,
+        "an image with vibrant colors": 0.03261207584789318,
+        "an image with muted colors": 0.07025210179516699
+      }
+    },
+    "texture": {
+      "mean_variance": 0.03956508298442114,
+      "per_prompt_variance": {
+        "an image with rough texture": 0.022526705812624503,
+        "an image with smooth texture": 0.04602404179755916,
+        "an image with regular patterns": 0.03847787976858569,
+        "an image with irregular patterns": 0.051231704558915216
+      }
+    },
+    "composition": {
+      "mean_variance": 0.013413174134488313,
+      "per_prompt_variance": {
+        "an image with balanced composition": 0.014029671978149149,
+        "an image with dynamic composition": 0.0067916834831729025,
+        "an image with minimal composition": 0.006970811838925039,
+        "an image with complex composition": 0.025860529237706164
+      }
+    }
+  },
+  "Post_Impressionism": {
+    "color": {
+      "mean_variance": 0.03236523482025477,
+      "per_prompt_variance": {
+        "an image with warm colors": 0.047382163325173664,
+        "an image with cool colors": 0.0007392518586606777,
+        "an image with vibrant colors": 0.019375135935404096,
+        "an image with muted colors": 0.061964388161780626
+      }
+    },
+    "texture": {
+      "mean_variance": 0.023387843670611773,
+      "per_prompt_variance": {
+        "an image with rough texture": 0.03614193899419464,
+        "an image with smooth texture": 0.009746961813387644,
+        "an image with regular patterns": 0.016611161726399103,
+        "an image with irregular patterns": 0.031051312148465696
+      }
+    },
+    "composition": {
+      "mean_variance": 0.00732480242183574,
+      "per_prompt_variance": {
+        "an image with balanced composition": 0.007141044553149285,
+        "an image with dynamic composition": 0.0037118484681005538,
+        "an image with minimal composition": 0.0020723266165469196,
+        "an image with complex composition": 0.016373990049546202
+      }
+    }
+  },
+  "Realism": {
+    "color": {
+      "mean_variance": 0.015759865025576743,
+      "per_prompt_variance": {
+        "an image with warm colors": 0.023524578583493057,
+        "an image with cool colors": 0.00044829482579091364,
+        "an image with vibrant colors": 0.004694252566308218,
+        "an image with muted colors": 0.03437233412671479
+      }
+    },
+    "texture": {
+      "mean_variance": 0.02085783747828285,
+      "per_prompt_variance": {
+        "an image with rough texture": 0.03326905163312844,
+        "an image with smooth texture": 0.01685161426702488,
+        "an image with regular patterns": 0.022609452679511022,
+        "an image with irregular patterns": 0.010701231333467067
+      }
+    },
+    "composition": {
+      "mean_variance": 0.008136248556556898,
+      "per_prompt_variance": {
+        "an image with balanced composition": 0.00920886897448982,
+        "an image with dynamic composition": 0.0030202698348969787,
+        "an image with minimal composition": 0.004951732982565604,
+        "an image with complex composition": 0.015364122434275191
+      }
+    }
+  },
+  "Rococo": {
+    "color": {
+      "mean_variance": 0.017752391669497724,
+      "per_prompt_variance": {
+        "an image with warm colors": 0.017004771588329654,
+        "an image with cool colors": 0.0026845569574687777,
+        "an image with vibrant colors": 0.009514104318076044,
+        "an image with muted colors": 0.04180613381411642
+      }
+    },
+    "texture": {
+      "mean_variance": 0.010533569524938632,
+      "per_prompt_variance": {
+        "an image with rough texture": 0.011711406935553654,
+        "an image with smooth texture": 0.004259067530548509,
+        "an image with regular patterns": 0.02122045364724659,
+        "an image with irregular patterns": 0.004943349986405779
+      }
+    },
+    "composition": {
+      "mean_variance": 0.0036812457200626086,
+      "per_prompt_variance": {
+        "an image with balanced composition": 0.004273136958827726,
+        "an image with dynamic composition": 0.0030189167001291816,
+        "an image with minimal composition": 0.0015501901149712752,
+        "an image with complex composition": 0.005882739106322251
+      }
+    }
+  },
+  "Romanticism": {
+    "color": {
+      "mean_variance": 0.02698408108006208,
+      "per_prompt_variance": {
+        "an image with warm colors": 0.04757878476310795,
+        "an image with cool colors": 0.0004702785396809855,
+        "an image with vibrant colors": 0.002636767270981015,
+        "an image with muted colors": 0.057250493746478365
+      }
+    },
+    "texture": {
+      "mean_variance": 0.023734330822306884,
+      "per_prompt_variance": {
+        "an image with rough texture": 0.0209484200873311,
+        "an image with smooth texture": 0.024699177702761768,
+        "an image with regular patterns": 0.02206211142141966,
+        "an image with irregular patterns": 0.02722761407771501
+      }
+    },
+    "composition": {
+      "mean_variance": 0.007597324007463178,
+      "per_prompt_variance": {
+        "an image with balanced composition": 0.01137364346196314,
+        "an image with dynamic composition": 0.0041222362660497,
+        "an image with minimal composition": 0.0008309577424200405,
+        "an image with complex composition": 0.014062458559419833
+      }
+    }
+  },
+  "Symbolism": {
+    "color": {
+      "mean_variance": 0.02318395253902545,
+      "per_prompt_variance": {
+        "an image with warm colors": 0.035545078425146086,
+        "an image with cool colors": 0.0005059039270465932,
+        "an image with vibrant colors": 0.0044090868386439715,
+        "an image with muted colors": 0.052275740965265154
+      }
+    },
+    "texture": {
+      "mean_variance": 0.02567792013951254,
+      "per_prompt_variance": {
+        "an image with rough texture": 0.04430194651415979,
+        "an image with smooth texture": 0.01601880431153201,
+        "an image with regular patterns": 0.017799907552711595,
+        "an image with irregular patterns": 0.024591022179646753
+      }
+    },
+    "composition": {
+      "mean_variance": 0.010578043866384373,
+      "per_prompt_variance": {
+        "an image with balanced composition": 0.01162615351383547,
+        "an image with dynamic composition": 0.006655322765321553,
+        "an image with minimal composition": 0.0019486425775364124,
+        "an image with complex composition": 0.022082056608844058
+      }
+    }
+  },
+  "Synthetic_Cubism": {
+    "color": {
+      "mean_variance": 0.034678774818726624,
+      "per_prompt_variance": {
+        "an image with warm colors": 0.048474644580212806,
+        "an image with cool colors": 0.0004920941935563263,
+        "an image with vibrant colors": 0.010739807650770084,
+        "an image with muted colors": 0.07900855285036727
+      }
+    },
+    "texture": {
+      "mean_variance": 0.01606942294178034,
+      "per_prompt_variance": {
+        "an image with rough texture": 0.018554063251592333,
+        "an image with smooth texture": 0.005317273961194331,
+        "an image with regular patterns": 0.007521315289178536,
+        "an image with irregular patterns": 0.03288503926515617
+      }
+    },
+    "composition": {
+      "mean_variance": 0.0036817333982733158,
+      "per_prompt_variance": {
+        "an image with balanced composition": 0.003624526147264556,
+        "an image with dynamic composition": 0.002520790083669676,
+        "an image with minimal composition": 6.57569532786309e-05,
+        "an image with complex composition": 0.008515860408880402
+      }
+    }
+  },
+  "Ukiyo_e": {
+    "color": {
+      "mean_variance": 0.01977199590339955,
+      "per_prompt_variance": {
+        "an image with warm colors": 0.021207579264516534,
+        "an image with cool colors": 0.0026125756422851667,
+        "an image with vibrant colors": 0.011147982306279738,
+        "an image with muted colors": 0.04411984640051677
+      }
+    },
+    "texture": {
+      "mean_variance": 0.01284132588775404,
+      "per_prompt_variance": {
+        "an image with rough texture": 0.009176409587334613,
+        "an image with smooth texture": 0.008223882948018105,
+        "an image with regular patterns": 0.023095169830477325,
+        "an image with irregular patterns": 0.010869841185186115
+      }
+    },
+    "composition": {
+      "mean_variance": 0.006082335520239336,
+      "per_prompt_variance": {
+        "an image with balanced composition": 0.0064839155631949115,
+        "an image with dynamic composition": 0.0041912586688411056,
+        "an image with minimal composition": 0.0005452579338241708,
+        "an image with complex composition": 0.013108909915097156
+      }
+    }
+  }
+}

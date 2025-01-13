@@ -31,6 +31,15 @@ from style_decomposition import StyleDecompositionAnalyzer
 
 
 class HierarchicalStyleDecomposer(StyleDecompositionAnalyzer):
+
+    def __init__(self, model_name: str = "ViT-B/32", batch_size: int = 32):
+        super().__init__(model_name, batch_size)
+        self.variance_thresholds = {
+            'color': 0.03,  # Based on your analysis data
+            'texture': 0.02,
+            'composition': 0.01
+        }
+
     def decompose_hierarchically(self, embeddings: torch.Tensor, labels: List[str]) -> Dict:
         """Hierarchical decomposition of style embeddings"""
         # Initial concept projections

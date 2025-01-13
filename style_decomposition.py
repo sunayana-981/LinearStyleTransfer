@@ -153,6 +153,83 @@ class StyleDecompositionAnalyzer:
         embeddings = torch.cat(embeddings_list, dim=0)
         
         return embeddings, [str(p) for p in image_paths], labels
+    
+    def decompose_hierarchically(self, embeddings: torch.Tensor, labels: List[str]) -> Dict:
+        """Hierarchical decomposition of style embeddings"""
+        logger.info("Starting hierarchical decomposition...")
+        
+        # Initial concept projections
+        logger.info("Computing initial projections...")
+        initial_projections = self.decompose_concept_space(embeddings)
+        
+        # Create root node
+        tree = {
+            'embeddings': embeddings,
+            'projections': initial_projections,
+            'children': {}
+        }
+
+        # First level: Split by composition
+        logger.info("Processing first level (composition)...")
+        comp_projections = initial_projections['composition']
+        comp_clusters = self._cluster_by_variance(comp_projections, self.variance_thresholds['composition'])
+        logger.info(f"Found {len(comp_clusters)} composition clusters")
+
+        for comp_idx, comp_mask in comp_clusters.items():
+            logger.info(f"Processing composition cluster {comp_idx}")
+            cluster_embeddings = embeddings[comp_mask]
+            cluster_projections = self.decompose_concept_space(cluster_embeddings)
+            
+            tree['children'][f'comp_{comp_idx}'] = {
+                'embeddings': cluster_embeddings,
+                'projections': cluster_projections,
+                'children': {}
+            }
+
+            # Second level: Split by texture
+            logger.info(f"Processing texture splits for composition cluster {comp_idx}")
+            tex_clusters = self._cluster_by_variance(
+                cluster_projections['texture'],
+                self.variance_thresholds['texture']
+            )
+
+            for tex_idx, tex_mask in tex_clusters.items():
+                logger.info(f"Processing texture cluster {tex_idx}")
+                sub_embeddings = cluster_embeddings[tex_mask]
+                sub_projections = self.decompose_concept_space(sub_embeddings)
+                
+                tree['children'][f'comp_{comp_idx}']['children'][f'tex_{tex_idx}'] = {
+                    'embeddings': sub_embeddings,
+                    'projections': sub_projections,
+                    'children': {}
+                }
+
+        logger.info("Hierarchical decomposition completed")
+        return tree
+
+    def _cluster_by_variance(self, projections: torch.Tensor, threshold: float) -> Dict[int, torch.Tensor]:
+        """Cluster embeddings based on projection variance"""
+        # Move to CPU for sklearn operations
+        proj_np = projections.cpu().numpy()
+        
+        # Calculate variances along feature dimensions
+        variances = np.var(proj_np, axis=1)
+        
+        # Determine number of clusters based on variance threshold
+        n_clusters = max(2, int(np.sum(variances > threshold)))
+        
+        # Perform clustering
+        kmeans = KMeans(n_clusters=n_clusters, random_state=42)
+        clusters = kmeans.fit_predict(proj_np)
+        
+        # Create masks for each cluster
+        cluster_masks = {}
+        for i in range(n_clusters):
+            # Convert back to tensor and move to same device as original projections
+            mask = torch.tensor(clusters == i, device=projections.device)
+            cluster_masks[i] = mask
+        
+        return cluster_masks
 
     def decompose_concept_space(self, embeddings: torch.Tensor) -> Dict[str, torch.Tensor]:
         """Decompose embeddings into concept-specific subspaces."""

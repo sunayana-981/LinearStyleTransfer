@@ -216,7 +216,7 @@ if __name__ == "__main__":
     
     parser = argparse.ArgumentParser(description="Analyze artistic styles using Claude and Stable Diffusion")
     parser.add_argument("--dataset", type=str, required=True, help="Path to WikiArt dataset")
-    parser.add_argument("--anthropic-key", type=str, required=True, help="Anthropic API key")
+    parser.add_argument("--anthropic-key", type=str, default= , required=True, help="Anthropic API key")
     parser.add_argument("--output", type=str, default="style_analysis_output", help="Output directory for visualizations")
     
     args = parser.parse_args()

@@ -1,0 +1,33 @@
+2025-01-14 14:43:38,270 - __main__ - INFO - Using GPU: NVIDIA GeForce RTX 3090
+2025-01-14 14:43:38,438 - __main__ - INFO - Initialized CAVVisualizer with 6 strength levels
+2025-01-14 14:43:38,454 - __main__ - INFO - Processing content 1 with style 1
+2025-01-14 14:43:39,765 - __main__ - INFO - Saved comparison plot to Artistic/blur/comparisons\comparison_content1_style_01.png
+2025-01-14 14:43:39,770 - __main__ - INFO - Processing content 1 with style 2
+2025-01-14 14:43:40,815 - __main__ - INFO - Saved comparison plot to Artistic/blur/comparisons\comparison_content1_style_02.png
+2025-01-14 14:43:40,818 - __main__ - INFO - Processing content 1 with style 3
+2025-01-14 14:43:41,750 - __main__ - INFO - Saved comparison plot to Artistic/blur/comparisons\comparison_content1_style_03.png
+2025-01-14 14:43:41,769 - __main__ - INFO - Processing content 1 with style 4
+2025-01-14 14:43:42,677 - __main__ - INFO - Saved comparison plot to Artistic/blur/comparisons\comparison_content1_style_04.png
+2025-01-14 14:43:42,683 - __main__ - INFO - Processing content 1 with style 5
+2025-01-14 14:43:43,588 - __main__ - INFO - Saved comparison plot to Artistic/blur/comparisons\comparison_content1_style_05.png
+2025-01-14 14:43:43,589 - __main__ - INFO - Processing content 1 with style 6
+2025-01-14 14:43:44,480 - __main__ - INFO - Saved comparison plot to Artistic/blur/comparisons\comparison_content1_style_06.png
+2025-01-14 14:43:44,492 - __main__ - INFO - Processing content 1 with style 7
+2025-01-14 14:43:45,443 - __main__ - INFO - Saved comparison plot to Artistic/blur/comparisons\comparison_content1_style_07.png
+2025-01-14 14:43:45,450 - __main__ - INFO - Processing content 1 with style 8
+2025-01-14 14:43:46,576 - __main__ - INFO - Saved comparison plot to Artistic/blur/comparisons\comparison_content1_style_08.png
+2025-01-14 14:43:46,582 - __main__ - INFO - Processing content 1 with style 9
+2025-01-14 14:43:47,672 - __main__ - INFO - Saved comparison plot to Artistic/blur/comparisons\comparison_content1_style_09.png
+2025-01-14 14:43:47,677 - __main__ - INFO - Processing content 1 with style 10
+2025-01-14 14:43:48,569 - __main__ - INFO - Saved comparison plot to Artistic/blur/comparisons\comparison_content1_style_10.png
+2025-01-14 14:43:48,579 - __main__ - INFO - Processing content 1 with style 11
+2025-01-14 14:43:49,496 - __main__ - INFO - Saved comparison plot to Artistic/blur/comparisons\comparison_content1_style_11.png
+2025-01-14 14:43:49,500 - __main__ - INFO - Processing content 1 with style 12
+2025-01-14 14:43:50,449 - __main__ - INFO - Saved comparison plot to Artistic/blur/comparisons\comparison_content1_style_12.png
+2025-01-14 14:43:50,455 - __main__ - INFO - Processing content 1 with style 13
+2025-01-14 14:43:51,475 - __main__ - INFO - Saved comparison plot to Artistic/blur/comparisons\comparison_content1_style_13.png
+2025-01-14 14:43:51,482 - __main__ - INFO - Processing content 1 with style 14
+2025-01-14 14:43:52,554 - __main__ - INFO - Saved comparison plot to Artistic/blur/comparisons\comparison_content1_style_14.png
+2025-01-14 14:43:52,573 - __main__ - INFO - Processing content 1 with style 15
+2025-01-14 14:43:53,515 - __main__ - INFO - Saved comparison plot to Artistic/blur/comparisons\comparison_content1_style_15.png
+2025-01-14 14:43:53,519 - __main__ - INFO - Processing content 1 with style 16

@@ -119,6 +119,8 @@ class MulLayer(nn.Module):
             # Compute the transformation matrix by multiplying style and content matrices
             transmatrix = torch.bmm(sMatrix, cMatrix)
 
+            
+
             # Apply the transformation to the compressed content
             transfeature = torch.bmm(transmatrix, compress_content).view(b, c, h, w)
 

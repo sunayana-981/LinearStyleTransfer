@@ -18,13 +18,13 @@ if __name__ == "__main__":
                         help='pre-trained decoder path')
     parser.add_argument("--matrixPath", default='models/r41.pth',
                         help='pre-trained model path')
-    parser.add_argument("--stylePath", default="data/style/",
+    parser.add_argument("--stylePath", default="data/content2",
                         help='path to style image')
-    parser.add_argument("--contentPath", default="data/content/",
+    parser.add_argument("--contentPath", default="data/content2",
                         help='path to frames')
-    parser.add_argument("--outf", default="Artistic/",
+    parser.add_argument("--outf", default="Artistic_temp/",
                         help='path to transferred images')
-    parser.add_argument("--matrixOutf", default="Matrices/",
+    parser.add_argument("--matrixOutf", default="Matrices_temp/",
                         help='path to save transformation matrices')
     parser.add_argument("--batchSize", type=int, default=1,
                         help='batch size')

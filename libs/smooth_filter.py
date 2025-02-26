@@ -385,7 +385,7 @@ def smooth_filter(initImg, contentImg, f_radius=15,f_edge=1e-1):
 	'''
 	if type(initImg) == str:
 	    initImg = Image.open(initImg).convert("RGB")
-	best_image_bgr = np.array(initImg, dtype=np.float32)
+	    best_image_bgr = np.array(initImg, dtype=np.float32)
 	bW, bH, bC = best_image_bgr.shape
 	best_image_bgr = best_image_bgr[:, :, ::-1]
 	best_image_bgr = best_image_bgr.transpose((2, 0, 1))

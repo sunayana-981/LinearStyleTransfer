@@ -529,11 +529,11 @@ def analyze_style_basis(content_img, cavs, style_controller, output_dir, n_compo
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--content_image", default="data/content/08.jpg",
+    parser.add_argument("--content_image", default="sampled_images/in00.png",
                       help='path to base content image')
-    parser.add_argument("--target_style_class", default="sampled_images/Ukiyo-e/",
+    parser.add_argument("--target_style_class", default="sampled_images/day/",
                       help='directory containing target style class images')
-    parser.add_argument("--other_style_class", default="sampled_images/Realism/",
+    parser.add_argument("--other_style_class", default="sampled_images/night/",
                       help='directory containing other style class images')
     parser.add_argument("--vgg_dir", default='models/vgg_r41.pth',
                       help='pre-trained encoder path')
@@ -541,7 +541,7 @@ def main():
                       help='pre-trained decoder path')
     parser.add_argument("--matrixPath", default='models/r41.pth',
                       help='pre-trained matrix path')
-    parser.add_argument("--outf", default="results/style_class_cav/",
+    parser.add_argument("--outf", default="results/style_class_cav1/",
                       help='path to output images')
     parser.add_argument("--batch_size", type=int, default=10,
                       help='batch size for processing images')
@@ -648,43 +648,43 @@ def main():
         )
 
             # After learning class direction:
-        analyzer = CAVAnalyzer(style_controller)
-        analyze_cav(
-            analyzer,
-            content_img,
-            target_styles[0],  # Use first style image as reference
-            class_direction,
-            os.path.join(opt.outf, 'cav_analysis')
-        )
+        # analyzer = CAVAnalyzer(style_controller)
+        # analyze_cav(
+        #     analyzer,
+        #     content_img,
+        #     target_styles[0],  # Use first style image as reference
+        #     class_direction,
+        #     os.path.join(opt.outf, 'cav_analysis')
+        # )
 
-    def analyze_style_basis(content_img, cavs, style_controller, output_dir, n_components=5):
-        """Main function to find and analyze basis vectors"""
-        analyzer = CAVBasisAnalyzer(style_controller)
+    # def analyze_style_basis(content_img, cavs, style_controller, output_dir, n_components=5):
+    #     """Main function to find and analyze basis vectors"""
+    #     analyzer = CAVBasisAnalyzer(style_controller)
         
-        # Find basis vectors
-        basis_result = analyzer.find_basis_vectors(cavs, n_components)
+    #     # Find basis vectors
+    #     basis_result = analyzer.find_basis_vectors(cavs, n_components)
         
-        # Analyze and visualize results
-        analyzer.analyze_basis_components(basis_result, output_dir)
+    #     # Analyze and visualize results
+    #     analyzer.analyze_basis_components(basis_result, output_dir)
         
-        return basis_result
+    #     return basis_result
 
-    basis_result = analyze_style_basis(
-        content_img,
-        cavs,  # Your learned CAVs
-        style_controller,
-        os.path.join(opt.outf, 'basis_analysis'),
-        n_components=5
-    )
+    # basis_result = analyze_style_basis(
+    #     content_img,
+    #     cavs,  # Your learned CAVs
+    #     style_controller,
+    #     os.path.join(opt.outf, 'basis_analysis'),
+    #     n_components=5
+    # )
 
-    # Example of using basis vectors for interpolation
-    coefficients = [0.5, 0.3, 0.2, 0.0, 0.0]  # Example weights
-    interpolated = analyzer.interpolate_styles(
-        content_img,
-        style_classes['Realism'][0],  # Use first realism image as base
-        basis_result['basis_vectors'],
-        coefficients
-    )
+    # # Example of using basis vectors for interpolation
+    # coefficients = [0.5, 0.3, 0.2, 0.0, 0.0]  # Example weights
+    # interpolated = analyzer.interpolate_styles(
+    #     content_img,
+    #     style_classes['Realism'][0],  # Use first realism image as base
+    #     basis_result['basis_vectors'],
+    #     coefficients
+    # )
 
 if __name__ == "__main__":
     main()

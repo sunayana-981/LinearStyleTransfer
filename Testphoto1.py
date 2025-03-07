@@ -28,16 +28,16 @@ parser.add_argument("--decoder_dir", default='models/dec_r41.pth',
                     help='pre-trained decoder path')
 parser.add_argument("--matrixPath", default='models/r41.pth',
                     help='pre-trained model path')
-parser.add_argument("--stylePath", default="concept_sets/sunny_vs_cloudy/positive",
-                    help='path to style image')
-parser.add_argument("--styleSegPath", default="concept_sets/sunny_vs_cloudy/positive_masks_unet",
-                    help='path to style image masks')
+parser.add_argument("--stylePath", default="data/photo_real/style/images/",
+                        help='path to style image')
+parser.add_argument("--styleSegPath", default="data/photo_real/styleSeg/",
+                        help='path to style image masks')
 parser.add_argument("--contentPath", default="data/photo_real/content/images/",
-                    help='path to content image')
+                        help='path to content image')
 parser.add_argument("--contentSegPath", default="data/photo_real/contentSeg/",
-                    help='path to content image masks')
-parser.add_argument("--outf", default="PhotoReal1/",
-                    help='path to save output images')
+                        help='path to content image masks')
+parser.add_argument("--outf", default="PhotoReal_orig/",
+                        help='path to save output images')
 parser.add_argument("--batchSize", type=int, default=1,
                     help='batch size')
 parser.add_argument('--fineSize', type=int, default=512,

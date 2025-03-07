@@ -297,12 +297,13 @@ def generate_ade20k_concept_set(concept_name, positive_prompt, negative_prompt, 
 if __name__ == "__main__":
     # Example usage:
     generate_ade20k_concept_set(
-        concept_name="sunny_vs_cloudy",
-        positive_prompt="a sunny day with clear blue sky",
-        negative_prompt="a cloudy overcast day with gray sky",
+        concept_name="day_vs_night",
+        positive_prompt="a bright day with clear blue sky",
+        negative_prompt="a dark night with starry sky or city lights",
         ade20k_dir="datasets/ade20k/images/training/",
-        sample_size=500
+        sample_size=5000
     )
+
 
 
 # Example usage:

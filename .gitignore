@@ -21,6 +21,14 @@ trained_models/r21
 data/
 pd_output/
 sampled_images/
+models/
+outputs/
+PhotoReal_orig/
+
+
+
+
+
 __pycache__/
 Artistic_temp/
 concept_sets/

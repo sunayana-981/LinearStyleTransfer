@@ -1,0 +1,95 @@
+2025-03-01 17:49:38,203 - INFO - Using device: cuda
+2025-03-01 17:49:38,203 - INFO - Initializing models...
+2025-03-01 17:49:38,635 - INFO - Feature dimensions: 512xtorch.Size([32, 32])
+2025-03-01 17:49:38,664 - INFO - Initializing training...
+2025-03-01 17:50:03,323 - INFO - Using device: cuda
+2025-03-01 17:50:03,323 - INFO - Initializing models...
+2025-03-01 17:50:03,798 - INFO - Feature dimensions: 512xtorch.Size([32, 32])
+2025-03-01 17:50:03,822 - INFO - Initializing training...
+2025-03-01 17:50:03,910 - INFO - Loaded WikiArt dataset with 22666 images from 27 styles
+2025-03-01 17:56:22,826 - INFO - Epoch 1/10, Loss: 0.029089
+2025-03-01 17:56:22,875 - INFO - Saved best model to models/concept_models\best_model.pth
+2025-03-01 17:56:22,923 - INFO - Saved checkpoint to models/concept_models\model_epoch_1.pth
+2025-03-01 18:00:50,663 - INFO - Epoch 2/10, Loss: 0.029595
+2025-03-01 18:00:50,713 - INFO - Saved checkpoint to models/concept_models\model_epoch_2.pth
+2025-03-01 18:05:18,100 - INFO - Epoch 3/10, Loss: 0.029283
+2025-03-01 18:05:18,148 - INFO - Saved checkpoint to models/concept_models\model_epoch_3.pth
+2025-03-01 18:09:45,943 - INFO - Epoch 4/10, Loss: 0.029073
+2025-03-01 18:09:45,995 - INFO - Saved best model to models/concept_models\best_model.pth
+2025-03-01 18:09:46,045 - INFO - Saved checkpoint to models/concept_models\model_epoch_4.pth
+2025-03-01 18:14:13,968 - INFO - Epoch 5/10, Loss: 0.031293
+2025-03-01 18:14:14,017 - INFO - Saved checkpoint to models/concept_models\model_epoch_5.pth
+2025-03-01 18:18:42,245 - INFO - Epoch 6/10, Loss: 0.029345
+2025-03-01 18:18:42,293 - INFO - Saved checkpoint to models/concept_models\model_epoch_6.pth
+2025-03-01 18:23:09,359 - INFO - Epoch 7/10, Loss: 0.029133
+2025-03-01 18:23:09,407 - INFO - Saved checkpoint to models/concept_models\model_epoch_7.pth
+2025-03-01 18:27:35,962 - INFO - Epoch 8/10, Loss: 0.030081
+2025-03-01 18:27:36,011 - INFO - Saved checkpoint to models/concept_models\model_epoch_8.pth
+2025-03-01 18:32:02,219 - INFO - Epoch 9/10, Loss: 0.029596
+2025-03-01 18:32:02,269 - INFO - Saved checkpoint to models/concept_models\model_epoch_9.pth
+2025-03-01 18:36:28,586 - INFO - Epoch 10/10, Loss: 0.029394
+2025-03-01 18:36:28,634 - INFO - Saved checkpoint to models/concept_models\model_epoch_10.pth
+2025-03-01 18:36:28,674 - INFO - Saved final model to models/concept_models\final_model.pth
+2025-03-01 18:36:28,674 - INFO - Done!
+2025-03-01 19:13:03,229 - INFO - Using device: cuda
+2025-03-01 19:13:03,229 - INFO - Initializing models...
+2025-03-01 19:13:03,545 - INFO - Feature dimensions: 512xtorch.Size([32, 32])
+2025-03-01 19:13:03,570 - INFO - Evaluating concept model...
+2025-03-01 19:19:24,857 - INFO - Using device: cuda
+2025-03-01 19:19:24,858 - INFO - Initializing models...
+2025-03-01 19:19:25,170 - INFO - Feature dimensions: 512xtorch.Size([32, 32])
+2025-03-01 19:19:25,196 - INFO - Initializing training...
+2025-03-01 19:19:25,290 - INFO - Loaded WikiArt dataset with 22666 images from 27 styles
+2025-03-01 19:23:52,379 - INFO - Epoch 1/10, Loss: 0.029089
+2025-03-01 19:23:52,433 - INFO - Saved best model to models/concept_models\best_model.pth
+2025-03-01 19:23:52,487 - INFO - Saved checkpoint to models/concept_models\model_epoch_1.pth
+2025-03-01 19:28:20,889 - INFO - Epoch 2/10, Loss: 0.029600
+2025-03-01 19:28:20,941 - INFO - Saved checkpoint to models/concept_models\model_epoch_2.pth
+2025-03-01 19:32:48,189 - INFO - Epoch 3/10, Loss: 0.029289
+2025-03-01 19:32:48,241 - INFO - Saved checkpoint to models/concept_models\model_epoch_3.pth
+2025-03-01 19:37:16,485 - INFO - Epoch 4/10, Loss: 0.029079
+2025-03-01 19:37:16,537 - INFO - Saved best model to models/concept_models\best_model.pth
+2025-03-01 19:37:16,590 - INFO - Saved checkpoint to models/concept_models\model_epoch_4.pth
+2025-03-01 19:41:45,416 - INFO - Epoch 5/10, Loss: 0.031300
+2025-03-01 19:41:45,469 - INFO - Saved checkpoint to models/concept_models\model_epoch_5.pth
+2025-03-01 19:46:14,115 - INFO - Epoch 6/10, Loss: 0.029351
+2025-03-01 19:46:14,168 - INFO - Saved checkpoint to models/concept_models\model_epoch_6.pth
+2025-03-01 19:50:42,058 - INFO - Epoch 7/10, Loss: 0.029138
+2025-03-01 19:50:42,110 - INFO - Saved checkpoint to models/concept_models\model_epoch_7.pth
+2025-03-01 19:55:08,420 - INFO - Epoch 8/10, Loss: 0.030089
+2025-03-01 19:55:08,472 - INFO - Saved checkpoint to models/concept_models\model_epoch_8.pth
+2025-03-01 19:59:34,440 - INFO - Epoch 9/10, Loss: 0.029601
+2025-03-01 19:59:34,492 - INFO - Saved checkpoint to models/concept_models\model_epoch_9.pth
+2025-03-01 20:04:03,193 - INFO - Epoch 10/10, Loss: 0.029401
+2025-03-01 20:04:03,246 - INFO - Saved checkpoint to models/concept_models\model_epoch_10.pth
+2025-03-01 20:04:03,290 - INFO - Saved final model to models/concept_models\final_model.pth
+2025-03-01 20:04:03,291 - INFO - Done!
+2025-03-01 20:08:39,861 - INFO - Using device: cuda
+2025-03-01 20:08:39,863 - INFO - Initializing models...
+2025-03-01 20:08:40,181 - INFO - Feature dimensions: 512xtorch.Size([32, 32])
+2025-03-01 20:08:40,204 - INFO - Evaluating concept model...
+2025-03-01 20:12:46,043 - INFO - Using device: cuda
+2025-03-01 20:12:46,044 - INFO - Initializing models...
+2025-03-01 20:12:46,363 - INFO - Feature dimensions: 512xtorch.Size([32, 32])
+2025-03-01 20:12:46,388 - INFO - Evaluating concept model...
+2025-03-01 20:13:03,169 - INFO - Evaluation complete. Results saved to outputs/concept_transfer
+2025-03-01 20:13:03,169 - INFO - Done!
+2025-03-01 20:17:14,518 - INFO - Using device: cuda
+2025-03-01 20:17:14,518 - INFO - Initializing models...
+2025-03-01 20:17:14,836 - INFO - Feature dimensions: 512xtorch.Size([32, 32])
+2025-03-01 20:17:14,860 - INFO - Evaluating concept model...
+2025-03-01 20:17:30,741 - INFO - Evaluation complete. Results saved to outputs/concept_transfer
+2025-03-01 20:17:30,742 - INFO - Done!
+2025-03-01 20:39:07,830 - INFO - Using device: cuda
+2025-03-01 20:39:07,830 - INFO - Initializing models...
+2025-03-01 20:39:08,140 - INFO - Feature dimensions: 512xtorch.Size([32, 32])
+2025-03-01 20:39:08,166 - INFO - Initializing training...
+2025-03-01 20:39:08,256 - INFO - Loaded WikiArt dataset with 22666 images from 27 styles
+2025-03-01 21:23:50,973 - INFO - Epoch 1/10, Loss: 0.029089
+2025-03-01 21:23:51,026 - INFO - Saved best model to models/concept_models\best_model.pth
+2025-03-01 21:23:51,083 - INFO - Saved checkpoint to models/concept_models\model_epoch_1.pth
+2025-03-02 13:45:34,873 - INFO - Using device: cuda
+2025-03-02 13:45:34,873 - INFO - Initializing models...
+2025-03-02 13:45:35,638 - INFO - Feature dimensions: 512xtorch.Size([32, 32])
+2025-03-02 13:45:35,662 - INFO - Initializing training...
+2025-03-02 13:45:35,748 - INFO - Loaded WikiArt dataset with 22666 images from 27 styles

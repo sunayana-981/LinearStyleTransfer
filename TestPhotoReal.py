@@ -1,6 +1,6 @@
 
 if __name__ == "__main__":
-    freeze_support()# Your entire script here
+    
 
 
     import os
@@ -21,9 +21,10 @@ if __name__ == "__main__":
     import torchvision.transforms as transforms
     from libs.smooth_filter import smooth_filter
     import torch.multiprocessing as mp
+    from torch.multiprocessing import freeze_support
     
     mp.set_start_method("spawn")
-
+    freeze_support()# Your entire script here
     parser = argparse.ArgumentParser()
     parser.add_argument("--vgg_dir", default='models/vgg_r41.pth',
                         help='pre-trained encoder path')
@@ -39,7 +40,7 @@ if __name__ == "__main__":
                         help='path to content image')
     parser.add_argument("--contentSegPath", default="data/photo_real/contentSeg/",
                         help='path to content image masks')
-    parser.add_argument("--outf", default="PhotoReal/",
+    parser.add_argument("--outf", default="PhotoReal_orig/",
                         help='path to save output images')
     parser.add_argument("--batchSize", type=int,default=1,
                         help='batch size')
